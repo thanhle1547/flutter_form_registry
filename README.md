@@ -1,39 +1,134 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+## flutter_form_registry
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.0.1-brightgreen.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+A workaround to track some FormFields in the tree.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+-----
 
-## Features
+Do you want functionality like scrolling to the first invalid form after being validated?
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+You don't want to maintain a list of keys for your form fields by yourself?
 
-## Getting started
+Because we cannot access registered FormFieldState in the Form widget by the GlobalKey<FormState> to determine which FormFieldState has validated error. So... To make fields property of FieldState publicity, please give a 👍 to the issue [#67283](https://github.com/flutter/flutter/issues/67283).
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+In while, may be this workaround will help you. Beside [flutter_form_builder](https://pub.dev/packages/flutter_form_builder), [ready_form](https://pub.dev/packages/ready_form).
 
-## Usage
+## 💽 Installation
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
+```
+  saut_enma_bloc:
+      git:
+        url: https://github.com/thanhle1547/flutter_simple_app_router
+        ref: flutter_bloc_latest
+        path: enum_name_map_arg_bloc
 ```
 
-## Additional information
+## 📺 Usage
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+1. Wrap the widget that contains all the form fields by `FormRegistryWidget`.
+
+To access all the registered form fields, give the `FormRegistryWidget` a `GlobalKey<FormRegistryWidgetState>`, or calling `FormRegistryWidgetState.of` static method.
+
+These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `defaultAlignmentPolicy` let you setup the default behavior when scrolling to the error fields.
+
+2. There are two cases about your form field widget that you need to know before continuing setup:
+
+    1. Your customized widget extends FormField.
+    2. Otherwise, you are not.
+
+With the first one, you need to:
+
+* Use the `FormFieldRegisteredWidgetMixin` for the class that extends `FormField` and override `fieldName`. This `fieldName` is nullable, so you only need to pass to it the value only when you need to validate.
+
+```dart
+class CustomTextFormField extends FormField<String>
+    with FormFieldRegisteredWidgetMixin {
+  CustomTextFormField({
+    Key? key,
+    this.fieldName,
+
+    // some code ...
+
+  })
+
+  // some code ...
+
+  @override
+  final String? fieldName;
+}
+```
+
+* Use the `FormFieldStateRegisteredWidgetMixin` for the class that extends `FormFieldState`.
+
+```dart
+class _CustomTextFormFieldState extends FormFieldState<String>
+    with FormFieldStateRegisteredWidgetMixin {
+  // some code ...
+}
+```
+
+You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to your customized widget.
+
+```dart
+class _TextFormFieldState extends FormFieldState<String>
+    with FormFieldStateRegisteredWidgetMixin {
+  @override
+  double get alignment => yourAlignment;
+
+  @override
+  Duration get duration => yourDuration;
+
+  @override
+  Curve get curve => yourCurve;
+
+  @override
+  ScrollPositionAlignmentPolicy get alignmentPolicy => yourAlignmentPolicy;
+
+  // some code ...
+}
+```
+
+With the second one, you need to:
+
+* Wrap the widget that contains the form field by `FormFieldRegisteredWidget` and pass down values to these parameters: `fieldName`, `validator`, and `buidler`. The `buidler` function takes `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments which you have to pass to the widget that is a form field.
+
+An example with package [`date_field`](https://pub.dev/packages/date_field).
+
+```dart
+FormFieldRegisteredWidget(
+  fieldName: 'select date',
+  validator: (DateTime? value) {
+    if (value == null) {
+      return "Empty!";
+    }
+
+    if (value.isBefore(DateTime.now())) {
+      return 'The date must be before today';
+    }
+
+    return null;
+  },
+  buidler: (
+    GlobalKey<FormFieldState<DateTime>> formFieldKey,
+    String? Function(DateTime?) validator,
+  ) {
+    return DateTimeFormField(
+      key: formFieldKey,
+      validator: validator,
+      onDateSelected: (value) {
+        setState(() {
+          selectedDate = value;
+        });
+      },
+      mode: DateTimeFieldPickerMode.date,
+      initialValue: selectedDate,
+    );
+  },
+),
+```
+
+If your actual form field has `restorationId`, you should be passing it to the `FormFieldRegisteredWidget` as well.
+
+You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
