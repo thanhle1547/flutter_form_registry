@@ -265,11 +265,11 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   List<RegisteredField> get registeredFields => _registeredFields;
 
   RegisteredField? get firstError {
-    try {
-      return _registeredFields.firstWhere((e) => e.hasError);
-    } catch (e) {
-      return null;
+    for (final RegisteredField field in _registeredFields) {
+      if (field.hasError) return field;
     }
+
+    return null;
   }
 
   @override
