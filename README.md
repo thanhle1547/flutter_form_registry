@@ -26,11 +26,9 @@ In while, may be this workaround will help you. Beside [flutter_form_builder](ht
 ## 💽 Installation
 
 ```
-  saut_enma_bloc:
+  flutter_form_registry:
       git:
-        url: https://github.com/thanhle1547/flutter_simple_app_router
-        ref: flutter_bloc_latest
-        path: enum_name_map_arg_bloc
+        url: https://github.com/thanhle1547/flutter_form_registry
 ```
 
 ## 📺 Usage
