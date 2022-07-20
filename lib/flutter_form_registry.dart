@@ -318,33 +318,18 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     super.didChangeDependencies();
     _registryWidgetState =
         context.findAncestorStateOfType<FormRegistryWidgetState>();
-    _registeredField = _registryWidgetState?._registeredFields.firstWhere(
-      (e) {
-        if (widget is FormFieldRegisteredWidgetMixin) {
-          final registered = (widget as FormFieldRegisteredWidgetMixin);
+    if (_registryWidgetState != null && _registeredField == null) {
+      _registeredField = RegisteredField._(
+        key: widget.key,
+        fieldName: widget is FormFieldRegisteredWidgetMixin
+            ? (widget as FormFieldRegisteredWidgetMixin).fieldName
+            : null,
+        context: context,
+        scrollConfiguration: this,
+      );
 
-          if (registered.fieldName != null) {
-            return e.fieldName == registered.fieldName;
-          }
-        }
-
-        return e.key == widget.key;
-      },
-      orElse: () {
-        final registeredField = RegisteredField._(
-          key: widget.key,
-          fieldName: widget is FormFieldRegisteredWidgetMixin
-              ? (widget as FormFieldRegisteredWidgetMixin).fieldName
-              : null,
-          context: context,
-          scrollConfiguration: this,
-        );
-
-        _registryWidgetState!._register(registeredField);
-
-        return registeredField;
-      },
-    );
+      _registryWidgetState!._register(_registeredField!);
+    }
   }
 
   @override
@@ -498,21 +483,16 @@ class _FormFieldRegisteredWidgetState<T>
         context.findAncestorStateOfType<FormRegistryWidgetState>();
     // _key.currentContext might be equal `null`
     SchedulerBinding.instance?.addPostFrameCallback((_) {
-      _registeredField = _registryWidgetState?._registeredFields.firstWhere(
-        (e) => e.fieldName == widget.fieldName,
-        orElse: () {
-          final registeredField = RegisteredField._(
-            key: _key,
-            fieldName: widget.fieldName,
-            context: _key.currentContext!,
-            scrollConfiguration: widget,
-          );
+      if (_registryWidgetState != null && _registeredField == null) {
+        _registeredField = RegisteredField._(
+          key: _key,
+          fieldName: widget.fieldName,
+          context: _key.currentContext!,
+          scrollConfiguration: widget,
+        );
 
-          _registryWidgetState!._register(registeredField);
-
-          return registeredField;
-        },
-      );
+        _registryWidgetState!._register(_registeredField!);
+      }
     });
   }
 
