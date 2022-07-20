@@ -29,9 +29,9 @@ In while, may be this workaround will help you. Beside [flutter_form_builder](ht
 dependencies:
 
   flutter_form_registry:
-      git:
-        url: https://github.com/thanhle1547/flutter_form_registry
-        ref: flutter_below_2.5.0
+    git:
+      url: https://github.com/thanhle1547/flutter_form_registry
+      ref: flutter_below_2.5.0
 ```
 
 ## 📺 Usage
