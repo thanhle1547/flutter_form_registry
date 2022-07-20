@@ -31,6 +31,7 @@ dependencies:
   flutter_form_registry:
       git:
         url: https://github.com/thanhle1547/flutter_form_registry
+        ref: flutter_below_2.5.0
 ```
 
 ## 📺 Usage
