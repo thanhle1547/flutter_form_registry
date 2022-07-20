@@ -147,6 +147,18 @@ class RegisteredField {
 
     return leadingEdge >= 0 && trailingEdge <= 1;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    return other is RegisteredField &&
+        other.key == key &&
+        other.fieldName == fieldName;
+  }
+
+  @override
+  int get hashCode => hashValues(key, fieldName);
 }
 
 /// A registry to track some [FormField]s in the tree.
@@ -260,9 +272,10 @@ class FormRegistryWidget extends StatefulWidget {
 }
 
 class FormRegistryWidgetState extends State<FormRegistryWidget> {
-  final List<RegisteredField> _registeredFields = [];
+  final Set<RegisteredField> _registeredFields = {};
 
-  List<RegisteredField> get registeredFields => _registeredFields;
+  List<RegisteredField> get registeredFields =>
+      List.unmodifiable(_registeredFields.toList());
 
   RegisteredField? get firstError {
     for (final RegisteredField field in _registeredFields) {
@@ -272,11 +285,16 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
     return null;
   }
 
+  void _register(RegisteredField field) => _registeredFields.add(field);
+
+  void _unregister(RegisteredField? field) => _registeredFields.remove(field);
+
   @override
   Widget build(BuildContext context) => widget.child;
 }
 
 mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
+  // To identify
   String? get fieldName;
 }
 
@@ -343,7 +361,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
           scrollConfiguration: this,
         );
 
-        _registryWidgetState!._registeredFields.add(registeredField);
+        _registryWidgetState!._register(registeredField);
 
         return registeredField;
       },
@@ -360,6 +378,13 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
   void activate() {
     super.activate();
     _registeredField?._context = context;
+    _registryWidgetState?._register(_registeredField!);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    _registryWidgetState?._unregister(_registeredField);
   }
 
   @override
@@ -376,7 +401,8 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
   @override
   void dispose() {
-    _registryWidgetState?._registeredFields.remove(_registeredField);
+    _registryWidgetState?._unregister(_registeredField);
+    _registeredField = null;
     super.dispose();
   }
 
@@ -537,7 +563,7 @@ class _FormFieldRegisteredWidgetState<T>
             scrollConfiguration: widget,
           );
 
-          _registryWidgetState!._registeredFields.add(registeredField);
+          _registryWidgetState!._register(registeredField);
 
           return registeredField;
         },
@@ -557,6 +583,13 @@ class _FormFieldRegisteredWidgetState<T>
   void activate() {
     super.activate();
     _registeredField?._context = _key.currentContext!;
+    _registryWidgetState?._register(_registeredField!);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    _registryWidgetState?._unregister(_registeredField);
   }
 
   @override
@@ -573,7 +606,8 @@ class _FormFieldRegisteredWidgetState<T>
 
   @override
   void dispose() {
-    _registryWidgetState?._registeredFields.remove(_registeredField);
+    _registryWidgetState?._unregister(_registeredField);
+    _registeredField = null;
     super.dispose();
   }
 
