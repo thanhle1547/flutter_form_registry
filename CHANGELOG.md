@@ -1,3 +1,12 @@
+## 0.0.3
+
+* Change environmental requirements: minimum flutter version is 2.5.0 
+
+* Remove Restoration ID from `RegisteredField`
+
+* rewrite didChangeDependencies
+
+
 ## 0.0.2
 
 * override == operator of `RegisteredField`
