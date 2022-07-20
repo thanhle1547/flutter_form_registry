@@ -32,20 +32,6 @@ class RegisteredField {
   final Key? key;
   final String? fieldName;
 
-  /// Restoration ID to save and restore the state of the form field.
-  ///
-  /// Setting the restoration ID to a non-null value results in whether or not
-  /// the form field validation persists.
-  ///
-  /// The state of this widget is persisted in a [RestorationBucket] claimed
-  /// from the surrounding [RestorationScope] using the provided restoration ID.
-  ///
-  /// See also:
-  ///
-  ///  * [RestorationManager], which explains how state restoration works in
-  ///    Flutter.
-  String? _restorationId;
-
   // ignore: prefer_final_fields
   BuildContext _context;
   BuildContext get context => _context;
@@ -55,11 +41,9 @@ class RegisteredField {
   RegisteredField._({
     this.key,
     this.fieldName,
-    String? restorationId,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
-  })  : _restorationId = restorationId,
-        _context = context,
+  })  : _context = context,
         _scrollConfiguration = scrollConfiguration;
 
   String? _errorText;
@@ -344,11 +328,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
           }
         }
 
-        if (widget.key != null) {
-          return e.key == widget.key;
-        }
-
-        return e._restorationId == restorationId;
+        return e.key == widget.key;
       },
       orElse: () {
         final registeredField = RegisteredField._(
@@ -356,7 +336,6 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
           fieldName: widget is FormFieldRegisteredWidgetMixin
               ? (widget as FormFieldRegisteredWidgetMixin).fieldName
               : null,
-          restorationId: restorationId,
           context: context,
           scrollConfiguration: this,
         );
@@ -369,34 +348,9 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
   }
 
   @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    super.restoreState(oldBucket, initialRestore);
-    _registeredField?._errorText = errorText;
-  }
-
-  @override
-  void activate() {
-    super.activate();
-    _registeredField?._context = context;
-    _registryWidgetState?._register(_registeredField!);
-  }
-
-  @override
   void deactivate() {
     super.deactivate();
     _registryWidgetState?._unregister(_registeredField);
-  }
-
-  @override
-  void didToggleBucket(RestorationBucket? oldBucket) {
-    super.didToggleBucket(oldBucket);
-    _registeredField?._errorText = errorText;
-  }
-
-  @override
-  void didUpdateWidget(covariant FormField<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _registeredField?._restorationId = widget.restorationId;
   }
 
   @override
@@ -415,7 +369,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     if (!result &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstError == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      SchedulerBinding.instance?.addPostFrameCallback((timeStamp) {
         _registeredField?.scrollToIntoView(
           alignment: alignment,
           duration: duration,
@@ -432,6 +386,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
   Widget build(BuildContext context) {
     final result = super.build(context);
 
+    _registeredField?._context = context;
     _registeredField?._errorText = errorText;
 
     return result;
@@ -448,7 +403,6 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
   const FormFieldRegisteredWidget({
     Key? key,
     required this.fieldName,
-    this.restorationId,
     required this.validator,
     required this.buidler,
     this.alignment = _kAlignment,
@@ -458,20 +412,6 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
   }) : super(key: key);
 
   final String fieldName;
-
-  /// Restoration ID to save and restore the state of the form field.
-  ///
-  /// Setting the restoration ID to a non-null value results in whether or not
-  /// the form field validation persists.
-  ///
-  /// The state of this widget is persisted in a [RestorationBucket] claimed
-  /// from the surrounding [RestorationScope] using the provided restoration ID.
-  ///
-  /// See also:
-  ///
-  ///  * [RestorationManager], which explains how state restoration works in
-  ///    Flutter.
-  final String? restorationId;
 
   /// An optional method that validates an input. Returns an error string to
   /// display if the input is invalid, or null otherwise.
@@ -522,7 +462,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
 
 /// State associated with a [FormFieldRegisteredWidget] widget.
 class _FormFieldRegisteredWidgetState<T>
-    extends State<FormFieldRegisteredWidget<T>> with RestorationMixin {
+    extends State<FormFieldRegisteredWidget<T>> {
   late final GlobalKey<FormFieldState<T>> _key;
 
   late FormRegistryWidgetState? _registryWidgetState;
@@ -542,7 +482,13 @@ class _FormFieldRegisteredWidgetState<T>
 
   @override
   Widget build(BuildContext context) {
-    return widget.buidler(_key, _validator);
+    final result = widget.buidler(_key, _validator);
+
+    if (_key.currentContext != null) {
+      _registeredField?._context = _key.currentContext!;
+    }
+
+    return result;
   }
 
   @override
@@ -551,14 +497,13 @@ class _FormFieldRegisteredWidgetState<T>
     _registryWidgetState =
         context.findAncestorStateOfType<FormRegistryWidgetState>();
     // _key.currentContext might be equal `null`
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
       _registeredField = _registryWidgetState?._registeredFields.firstWhere(
         (e) => e.fieldName == widget.fieldName,
         orElse: () {
           final registeredField = RegisteredField._(
             key: _key,
             fieldName: widget.fieldName,
-            restorationId: widget.restorationId,
             context: _key.currentContext!,
             scrollConfiguration: widget,
           );
@@ -572,36 +517,9 @@ class _FormFieldRegisteredWidgetState<T>
   }
 
   @override
-  String? get restorationId => widget.restorationId;
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    _registeredField?._errorText = _key.currentState!.errorText;
-  }
-
-  @override
-  void activate() {
-    super.activate();
-    _registeredField?._context = _key.currentContext!;
-    _registryWidgetState?._register(_registeredField!);
-  }
-
-  @override
   void deactivate() {
     super.deactivate();
     _registryWidgetState?._unregister(_registeredField);
-  }
-
-  @override
-  void didToggleBucket(RestorationBucket? oldBucket) {
-    super.didToggleBucket(oldBucket);
-    _registeredField?._errorText = _key.currentState!.errorText;
-  }
-
-  @override
-  void didUpdateWidget(covariant FormFieldRegisteredWidget<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _registeredField?._restorationId = widget.restorationId;
   }
 
   @override
@@ -619,7 +537,7 @@ class _FormFieldRegisteredWidgetState<T>
     if (result != null &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstError == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
+      SchedulerBinding.instance?.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
           alignment: widget.alignment,
           duration: widget.duration,
