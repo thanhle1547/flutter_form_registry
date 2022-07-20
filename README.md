@@ -15,14 +15,20 @@ Because we cannot access registered FormFieldState in the Form widget by the Glo
 
 In while, may be this workaround will help you. Beside [flutter_form_builder](https://pub.dev/packages/flutter_form_builder), [ready_form](https://pub.dev/packages/ready_form).
 
+## 🔍 Features
+
+* Tracking registered widget.
+
+* Can auto-scroll to the first Form's invalid field.
+
+* Each registered FormField widget contains its key, error text and method to scroll its into view and check is it fully visible.
+
 ## 💽 Installation
 
 ```
-  saut_enma_bloc:
+  flutter_form_registry:
       git:
-        url: https://github.com/thanhle1547/flutter_simple_app_router
-        ref: flutter_bloc_latest
-        path: enum_name_map_arg_bloc
+        url: https://github.com/thanhle1547/flutter_form_registry
 ```
 
 ## 📺 Usage
