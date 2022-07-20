@@ -1,3 +1,12 @@
+## 0.0.2
+
+* override == operator of `RegisteredField`
+
+* Change the type of variable `FormRegistryWidgetState._registeredFields` to `Set`
+
+* override deactivate method
+
+
 ## 0.0.1
 
 * Initial release contains the following features:

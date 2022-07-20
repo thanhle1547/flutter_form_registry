@@ -1,6 +1,6 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.0.1-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.0.2-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
@@ -26,6 +26,8 @@ In while, may be this workaround will help you. Beside [flutter_form_builder](ht
 ## 💽 Installation
 
 ```
+dependencies:
+
   flutter_form_registry:
       git:
         url: https://github.com/thanhle1547/flutter_form_registry
