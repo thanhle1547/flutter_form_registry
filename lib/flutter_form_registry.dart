@@ -525,7 +525,7 @@ class _FormFieldRegisteredWidgetState<T>
   Widget build(BuildContext context) {
     final result = widget.buidler(_key, _validator);
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (_key.currentContext == null) {
         _registryWidgetState?._unregister(_registeredField);
       } else {
