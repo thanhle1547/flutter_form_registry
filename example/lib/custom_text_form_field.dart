@@ -93,6 +93,7 @@ class CustomTextFormField extends FormField<String>
   CustomTextFormField({
     Key? key,
     this.fieldName,
+    this.lookupPriority,
     this.controller,
     String? initialValue,
     FocusNode? focusNode,
@@ -262,6 +263,9 @@ class CustomTextFormField extends FormField<String>
 
   @override
   final String? fieldName;
+
+  @override
+  final int? lookupPriority;
 
   @override
   FormFieldState<String> createState() => _TextFormFieldState();

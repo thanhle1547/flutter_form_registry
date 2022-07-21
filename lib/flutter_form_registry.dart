@@ -32,6 +32,8 @@ class RegisteredField {
   final Key? key;
   final String? fieldName;
 
+  final int _priority;
+
   // ignore: prefer_final_fields
   BuildContext _context;
   BuildContext get context => _context;
@@ -41,9 +43,11 @@ class RegisteredField {
   RegisteredField._({
     this.key,
     this.fieldName,
+    int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
-  })  : _context = context,
+  })  : _priority = priority ?? -1,
+        _context = context,
         _scrollConfiguration = scrollConfiguration;
 
   String? _errorText;
@@ -256,7 +260,7 @@ class FormRegistryWidget extends StatefulWidget {
 }
 
 class FormRegistryWidgetState extends State<FormRegistryWidget> {
-  final Set<RegisteredField> _registeredFields = {};
+  final List<RegisteredField> _registeredFields = [];
 
   List<RegisteredField> get registeredFields =>
       List.unmodifiable(_registeredFields.toList());
@@ -269,7 +273,36 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
     return null;
   }
 
-  void _register(RegisteredField field) => _registeredFields.add(field);
+  void _register(RegisteredField field) {
+    if (_registeredFields.contains(field)) return;
+
+    if (field._priority == -1 || _registeredFields.isEmpty) {
+      _registeredFields.add(field);
+      return;
+    }
+
+    for (int i = 0; i < _registeredFields.length; i++) {
+      final int current = _registeredFields[i]._priority;
+      final int incomming = field._priority;
+
+      if (incomming < current) {
+        _registeredFields.insert(i, field);
+        return;
+      }
+
+      if (i + 1 == _registeredFields.length) {
+        _registeredFields.add(field);
+        return;
+      }
+
+      final int next = _registeredFields[i + 1]._priority;
+
+      if (incomming >= current && (incomming < next || next == -1)) {
+        _registeredFields.insert(i + 1, field);
+        return;
+      }
+    }
+  }
 
   void _unregister(RegisteredField? field) => _registeredFields.remove(field);
 
@@ -278,8 +311,17 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 }
 
 mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
-  // To identify
+  /// The identifier between other [FormField]s when using [FormRegistryWidget].
   String? get fieldName;
+
+  /// When [FormField] visibility changes (e.g. from invisible to visible),
+  /// it will be registered as the last one in the set. So when lookup for
+  /// the first invalid field, which might be this one, but you got another.
+  /// If you consider this an issue, all you need to do is to set the priority
+  /// to arrange this [FormField].
+  ///
+  /// The default value is `-1` if `null`.
+  int? get lookupPriority;
 }
 
 mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
@@ -319,11 +361,14 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     _registryWidgetState =
         context.findAncestorStateOfType<FormRegistryWidgetState>();
     if (_registryWidgetState != null && _registeredField == null) {
+      final formMixin = widget is FormFieldRegisteredWidgetMixin
+          ? (widget as FormFieldRegisteredWidgetMixin)
+          : null;
+
       _registeredField = RegisteredField._(
         key: widget.key,
-        fieldName: widget is FormFieldRegisteredWidgetMixin
-            ? (widget as FormFieldRegisteredWidgetMixin).fieldName
-            : null,
+        fieldName: formMixin?.fieldName,
+        priority: formMixin?.lookupPriority,
         context: context,
         scrollConfiguration: this,
       );
@@ -406,6 +451,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
   const FormFieldRegisteredWidget({
     Key? key,
     required this.fieldName,
+    this.lookupPriority,
     this.restorationId,
     required this.validator,
     required this.buidler,
@@ -415,7 +461,17 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     this.alignmentPolicy = _kAlignmentPolicy,
   }) : super(key: key);
 
+  /// The identifier between other [FormField]s.
   final String fieldName;
+
+  /// When [FormField] visibility changes (e.g. from invisible to visible),
+  /// it will be registered as the last one in the set. So when lookup for
+  /// the first invalid field, which might be this one, but you got another.
+  /// If you consider this an issue, all you need to do is to set the priority
+  /// to arrange this [FormField].
+  ///
+  /// The default value is `-1` if `null`.
+  final int? lookupPriority;
 
   /// Restoration ID to save and restore the state of the form field.
   ///
@@ -526,6 +582,7 @@ class _FormFieldRegisteredWidgetState<T>
         _registeredField = RegisteredField._(
           key: _key,
           fieldName: widget.fieldName,
+          priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: widget,
         );
