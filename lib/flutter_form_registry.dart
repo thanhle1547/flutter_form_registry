@@ -500,7 +500,19 @@ class _FormFieldRegisteredWidgetState<T>
 
   @override
   Widget build(BuildContext context) {
-    return widget.buidler(_key, _validator);
+    final result = widget.buidler(_key, _validator);
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (_key.currentContext == null) {
+        _registryWidgetState?._unregister(_registeredField);
+      } else {
+        _registryWidgetState?._register(_registeredField!);
+        _registeredField?._context = _key.currentContext!;
+        _registeredField?._errorText = _key.currentState?.errorText;
+      }
+    });
+
+    return result;
   }
 
   @override
