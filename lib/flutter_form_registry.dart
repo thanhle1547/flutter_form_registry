@@ -30,7 +30,7 @@ abstract class _ScrollConfiguration {
 
 class RegisteredField {
   final Key? key;
-  final String? fieldName;
+  final String? id;
 
   final int _priority;
 
@@ -42,7 +42,7 @@ class RegisteredField {
 
   RegisteredField._({
     this.key,
-    this.fieldName,
+    this.id,
     int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
@@ -142,11 +142,11 @@ class RegisteredField {
     if (other.runtimeType != runtimeType) return false;
     return other is RegisteredField &&
         other.key == key &&
-        other.fieldName == fieldName;
+        other.id == id;
   }
 
   @override
-  int get hashCode => hashValues(key, fieldName);
+  int get hashCode => hashValues(key, id);
 }
 
 /// A registry to track some [FormField]s in the tree.
@@ -312,7 +312,7 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 
 mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
-  String? get fieldName;
+  String? get registryId;
 
   /// When [FormField] visibility changes (e.g. from invisible to visible),
   /// it will be registered as the last one in the set. So when lookup for
@@ -367,7 +367,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
       _registeredField = RegisteredField._(
         key: widget.key,
-        fieldName: formMixin?.fieldName,
+        id: formMixin?.registryId,
         priority: formMixin?.lookupPriority,
         context: context,
         scrollConfiguration: this,
@@ -447,10 +447,10 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     implements _ScrollConfiguration {
   /// Creates a [FormFieldRegisteredWidget] widget.
   ///
-  /// The [fieldName], [validator] and [buidler] parameters must not be null.
+  /// The [registryId], [validator] and [buidler] parameters must not be null.
   const FormFieldRegisteredWidget({
     Key? key,
-    required this.fieldName,
+    required this.registryId,
     this.lookupPriority,
     this.restorationId,
     required this.validator,
@@ -462,7 +462,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
   }) : super(key: key);
 
   /// The identifier between other [FormField]s.
-  final String fieldName;
+  final String registryId;
 
   /// When [FormField] visibility changes (e.g. from invisible to visible),
   /// it will be registered as the last one in the set. So when lookup for
@@ -581,7 +581,7 @@ class _FormFieldRegisteredWidgetState<T>
       if (_registryWidgetState != null && _registeredField == null) {
         _registeredField = RegisteredField._(
           key: _key,
-          fieldName: widget.fieldName,
+          id: widget.registryId,
           priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: widget,
