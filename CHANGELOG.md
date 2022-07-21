@@ -1,3 +1,8 @@
+## 0.2.0
+
+* **Add** scroll delay.
+
+
 ## 0.1.0
 
 * **Breaking:**
