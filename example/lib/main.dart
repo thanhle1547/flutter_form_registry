@@ -136,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _formKey.currentState?.validate();
 
           if (kDebugMode) {
-            print(_registerdKey.currentState!.firstError?.errorText);
+            print(_registerdKey.currentState!.firstInvalid?.errorText);
           }
         },
         tooltip: 'Scroll to invalid',

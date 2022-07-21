@@ -265,7 +265,7 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   List<RegisteredField> get registeredFields =>
       List.unmodifiable(_registeredFields.toList());
 
-  RegisteredField? get firstError {
+  RegisteredField? get firstInvalid {
     for (final RegisteredField field in _registeredFields) {
       if (field.hasError) return field;
     }
@@ -417,7 +417,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
     if (!result &&
         _autoScrollToFirstError &&
-        _registryWidgetState?.firstError == _registeredField) {
+        _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         _registeredField?.scrollToIntoView(
           alignment: alignment,
@@ -633,7 +633,7 @@ class _FormFieldRegisteredWidgetState<T>
 
     if (result != null &&
         _autoScrollToFirstError &&
-        _registryWidgetState?.firstError == _registeredField) {
+        _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
           alignment: widget.alignment,
