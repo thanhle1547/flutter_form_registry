@@ -1,3 +1,16 @@
+## 0.1.0
+
+* **Breaking:**
+
+  * Rename `fieldName` to `registryId`
+
+  * Rename `firstError` to `firstInvalid`
+
+* **Add** `lookupPriority` to change the `FormRegistryWidgetState.firstInvalid`
+
+* fix: when using `FormFieldRegisteredWidget`, if the provided key did not pass to the form field, unregister that field.
+
+
 ## 0.0.3
 
 * Change environmental requirements: minimum flutter version is 2.5.0 

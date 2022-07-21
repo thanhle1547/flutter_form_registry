@@ -1,6 +1,6 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.0.3-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.1.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
