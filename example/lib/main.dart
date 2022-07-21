@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     CustomTextFormField(
                       fieldName: "No. 25",
-                      initialValue: 'thirty',
+                      initialValue: 'twenty-five',
                       validator: integerTextFieldValidator,
                     ),
                     //

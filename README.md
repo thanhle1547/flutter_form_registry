@@ -13,7 +13,7 @@ You don't want to maintain a list of keys for your form fields by yourself?
 
 Because we cannot access registered FormFieldState in the Form widget by the GlobalKey<FormState> to determine which FormFieldState has validated error. So... To make fields property of FieldState publicity, please give a 👍 to the issue [#67283](https://github.com/flutter/flutter/issues/67283).
 
-In while, may be this workaround will help you. Beside [flutter_form_builder](https://pub.dev/packages/flutter_form_builder), [ready_form](https://pub.dev/packages/ready_form).
+In while, maybe this workaround will help you. Beside [flutter_form_builder](https://pub.dev/packages/flutter_form_builder), [ready_form](https://pub.dev/packages/ready_form).
 
 ## 🔍 Features
 
