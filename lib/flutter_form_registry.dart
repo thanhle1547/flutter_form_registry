@@ -30,7 +30,9 @@ abstract class _ScrollConfiguration {
 
 class RegisteredField {
   final Key? key;
-  final String? fieldName;
+  final String? id;
+
+  final int _priority;
 
   // ignore: prefer_final_fields
   BuildContext _context;
@@ -40,10 +42,12 @@ class RegisteredField {
 
   RegisteredField._({
     this.key,
-    this.fieldName,
+    this.id,
+    int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
-  })  : _context = context,
+  })  : _priority = priority ?? -1,
+        _context = context,
         _scrollConfiguration = scrollConfiguration;
 
   String? _errorText;
@@ -138,11 +142,11 @@ class RegisteredField {
     if (other.runtimeType != runtimeType) return false;
     return other is RegisteredField &&
         other.key == key &&
-        other.fieldName == fieldName;
+        other.id == id;
   }
 
   @override
-  int get hashCode => hashValues(key, fieldName);
+  int get hashCode => hashValues(key, id);
 }
 
 /// A registry to track some [FormField]s in the tree.
@@ -256,12 +260,12 @@ class FormRegistryWidget extends StatefulWidget {
 }
 
 class FormRegistryWidgetState extends State<FormRegistryWidget> {
-  final Set<RegisteredField> _registeredFields = {};
+  final List<RegisteredField> _registeredFields = [];
 
   List<RegisteredField> get registeredFields =>
       List.unmodifiable(_registeredFields.toList());
 
-  RegisteredField? get firstError {
+  RegisteredField? get firstInvalid {
     for (final RegisteredField field in _registeredFields) {
       if (field.hasError) return field;
     }
@@ -269,7 +273,36 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
     return null;
   }
 
-  void _register(RegisteredField field) => _registeredFields.add(field);
+  void _register(RegisteredField field) {
+    if (_registeredFields.contains(field)) return;
+
+    if (field._priority == -1 || _registeredFields.isEmpty) {
+      _registeredFields.add(field);
+      return;
+    }
+
+    for (int i = 0; i < _registeredFields.length; i++) {
+      final int current = _registeredFields[i]._priority;
+      final int incomming = field._priority;
+
+      if (incomming < current) {
+        _registeredFields.insert(i, field);
+        return;
+      }
+
+      if (i + 1 == _registeredFields.length) {
+        _registeredFields.add(field);
+        return;
+      }
+
+      final int next = _registeredFields[i + 1]._priority;
+
+      if (incomming >= current && (incomming < next || next == -1)) {
+        _registeredFields.insert(i + 1, field);
+        return;
+      }
+    }
+  }
 
   void _unregister(RegisteredField? field) => _registeredFields.remove(field);
 
@@ -278,8 +311,17 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 }
 
 mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
-  // To identify
-  String? get fieldName;
+  /// The identifier between other [FormField]s when using [FormRegistryWidget].
+  String? get registryId;
+
+  /// When [FormField] visibility changes (e.g. from invisible to visible),
+  /// it will be registered as the last one in the set. So when lookup for
+  /// the first invalid field, which might be this one, but you got another.
+  /// If you consider this an issue, all you need to do is to set the priority
+  /// to arrange this [FormField].
+  ///
+  /// The default value is `-1` if `null`.
+  int? get lookupPriority;
 }
 
 mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
@@ -319,11 +361,14 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     _registryWidgetState =
         context.findAncestorStateOfType<FormRegistryWidgetState>();
     if (_registryWidgetState != null && _registeredField == null) {
+      final formMixin = widget is FormFieldRegisteredWidgetMixin
+          ? (widget as FormFieldRegisteredWidgetMixin)
+          : null;
+
       _registeredField = RegisteredField._(
         key: widget.key,
-        fieldName: widget is FormFieldRegisteredWidgetMixin
-            ? (widget as FormFieldRegisteredWidgetMixin).fieldName
-            : null,
+        id: formMixin?.registryId,
+        priority: formMixin?.lookupPriority,
         context: context,
         scrollConfiguration: this,
       );
@@ -353,7 +398,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
     if (!result &&
         _autoScrollToFirstError &&
-        _registryWidgetState?.firstError == _registeredField) {
+        _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance?.addPostFrameCallback((timeStamp) {
         _registeredField?.scrollToIntoView(
           alignment: alignment,
@@ -384,10 +429,11 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     implements _ScrollConfiguration {
   /// Creates a [FormFieldRegisteredWidget] widget.
   ///
-  /// The [fieldName], [validator] and [buidler] parameters must not be null.
+  /// The [registryId], [validator] and [buidler] parameters must not be null.
   const FormFieldRegisteredWidget({
     Key? key,
-    required this.fieldName,
+    required this.registryId,
+    this.lookupPriority,
     required this.validator,
     required this.buidler,
     this.alignment = _kAlignment,
@@ -396,7 +442,17 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     this.alignmentPolicy = _kAlignmentPolicy,
   }) : super(key: key);
 
-  final String fieldName;
+  /// The identifier between other [FormField]s.
+  final String registryId;
+
+  /// When [FormField] visibility changes (e.g. from invisible to visible),
+  /// it will be registered as the last one in the set. So when lookup for
+  /// the first invalid field, which might be this one, but you got another.
+  /// If you consider this an issue, all you need to do is to set the priority
+  /// to arrange this [FormField].
+  ///
+  /// The default value is `-1` if `null`.
+  final int? lookupPriority;
 
   /// An optional method that validates an input. Returns an error string to
   /// display if the input is invalid, or null otherwise.
@@ -469,9 +525,15 @@ class _FormFieldRegisteredWidgetState<T>
   Widget build(BuildContext context) {
     final result = widget.buidler(_key, _validator);
 
-    if (_key.currentContext != null) {
-      _registeredField?._context = _key.currentContext!;
-    }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (_key.currentContext == null) {
+        _registryWidgetState?._unregister(_registeredField);
+      } else {
+        _registryWidgetState?._register(_registeredField!);
+        _registeredField?._context = _key.currentContext!;
+        _registeredField?._errorText = _key.currentState?.errorText;
+      }
+    });
 
     return result;
   }
@@ -486,7 +548,8 @@ class _FormFieldRegisteredWidgetState<T>
       if (_registryWidgetState != null && _registeredField == null) {
         _registeredField = RegisteredField._(
           key: _key,
-          fieldName: widget.fieldName,
+          id: widget.registryId,
+          priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: widget,
         );
@@ -516,7 +579,7 @@ class _FormFieldRegisteredWidgetState<T>
 
     if (result != null &&
         _autoScrollToFirstError &&
-        _registryWidgetState?.firstError == _registeredField) {
+        _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance?.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
           alignment: widget.alignment,

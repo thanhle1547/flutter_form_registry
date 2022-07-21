@@ -131,7 +131,8 @@ class CustomTextFormField extends FormField<String>
   /// and [new TextField], the constructor.
   CustomTextFormField({
     Key? key,
-    this.fieldName,
+    this.registryId,
+    this.lookupPriority,
     this.controller,
     String? initialValue,
     FocusNode? focusNode,
@@ -306,7 +307,10 @@ class CustomTextFormField extends FormField<String>
         );
 
   @override
-  final String? fieldName;
+  final String? registryId;
+
+  @override
+  final int? lookupPriority;
 
   /// Controls the text being edited.
   ///
