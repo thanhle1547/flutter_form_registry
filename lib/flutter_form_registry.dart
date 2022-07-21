@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+const Duration _kScrollDelay = Duration.zero;
 const double _kAlignment = 0.0;
 const Duration _kDuration = Duration.zero;
 const Curve _kCurve = Curves.ease;
@@ -11,6 +12,8 @@ const ScrollPositionAlignmentPolicy _kAlignmentPolicy =
     ScrollPositionAlignmentPolicy.explicit;
 
 abstract class _ScrollConfiguration {
+  Duration? get scrollDelay;
+
   /// To decide where to align the visible object
   /// when applying [ScrollPositionAlignmentPolicy.explicit].
   double get alignment;
@@ -64,17 +67,24 @@ class RegisteredField {
   ///  * [ScrollPositionAlignmentPolicy] for the way in which `alignment` is
   ///    applied, and the way the given `object` is aligned.
   void scrollToIntoView({
+    Duration? delay,
     double? alignment,
     Duration? duration,
     Curve? curve,
     ScrollPositionAlignmentPolicy? alignmentPolicy,
   }) {
-    Scrollable.ensureVisible(
-      context,
-      alignment: alignment ?? _scrollConfiguration.alignment,
-      duration: duration ?? _scrollConfiguration.duration,
-      curve: curve ?? _scrollConfiguration.curve,
-      alignmentPolicy: alignmentPolicy ?? _scrollConfiguration.alignmentPolicy,
+    Future.delayed(
+      delay ?? _scrollConfiguration.scrollDelay ?? Duration.zero,
+      () {
+        Scrollable.ensureVisible(
+          context,
+          alignment: alignment ?? _scrollConfiguration.alignment,
+          duration: duration ?? _scrollConfiguration.duration,
+          curve: curve ?? _scrollConfiguration.curve,
+          alignmentPolicy:
+              alignmentPolicy ?? _scrollConfiguration.alignmentPolicy,
+        );
+      },
     );
   }
 
@@ -140,9 +150,7 @@ class RegisteredField {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    return other is RegisteredField &&
-        other.key == key &&
-        other.id == id;
+    return other is RegisteredField && other.key == key && other.id == id;
   }
 
   @override
@@ -156,6 +164,7 @@ class FormRegistryWidget extends StatefulWidget {
   const FormRegistryWidget({
     Key? key,
     required this.autoScrollToFirstInvalid,
+    this.defaultScrollDelay = _kScrollDelay,
     this.defaultAlignment = _kAlignment,
     this.defaultDuration = _kDuration,
     this.defaultCurve = _kCurve,
@@ -165,6 +174,8 @@ class FormRegistryWidget extends StatefulWidget {
 
   /// Automatically scroll to the first invalid form field.
   final bool autoScrollToFirstInvalid;
+
+  final Duration defaultScrollDelay;
 
   /// To decide where to align the visible object
   /// when applying [ScrollPositionAlignmentPolicy.explicit].
@@ -334,6 +345,10 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
   bool get _autoScrollToFirstError =>
       _registryWidget?.autoScrollToFirstInvalid ?? false;
 
+  @override
+  Duration? get scrollDelay =>
+      _registryWidget?.defaultDuration ?? _kScrollDelay;
+
   /// To decide where to align the visible object
   /// when applying [ScrollPositionAlignmentPolicy.explicit].
   @override
@@ -401,6 +416,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
         _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance?.addPostFrameCallback((timeStamp) {
         _registeredField?.scrollToIntoView(
+          delay: scrollDelay,
           alignment: alignment,
           duration: duration,
           curve: curve,
@@ -436,6 +452,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     this.lookupPriority,
     required this.validator,
     required this.buidler,
+    this.scrollDelay = _kScrollDelay,
     this.alignment = _kAlignment,
     this.duration = _kDuration,
     this.curve = _kCurve,
@@ -475,6 +492,9 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     GlobalKey<FormFieldState<T>> formFieldKey,
     FormFieldValidator<T> validator,
   ) buidler;
+
+  @override
+  final Duration? scrollDelay;
 
   /// To decide where to align the visible object
   /// when applying [ScrollPositionAlignmentPolicy.explicit].
@@ -582,6 +602,7 @@ class _FormFieldRegisteredWidgetState<T>
         _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance?.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
+          delay: widget.scrollDelay,
           alignment: widget.alignment,
           duration: widget.duration,
           curve: widget.curve,
