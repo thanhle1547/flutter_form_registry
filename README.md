@@ -1,13 +1,13 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.2.0-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
 
 -----
 
-Do you want functionality like scrolling to the first invalid form after being validated?
+Do you want functionality like scrolling to the first invalid form?
 
 You don't want to maintain a list of keys for your form fields by yourself?
 
@@ -22,6 +22,12 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 * Can auto-scroll to the first Form's invalid field.
 
 * Each registered FormField widget contains its key, error text and method to scroll its into view and check is it fully visible.
+
+## 📦 Dependency
+
+* flutter sdk >= 3.0.0
+
+* dart sdk >=2.17.0 <3.0.0
 
 ## 💽 Installation
 
@@ -44,8 +50,8 @@ These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `default
 
 2. There are two cases about your form field widget that you need to know before continuing setup:
 
-    1. Your customized widget extends FormField.
-    2. Otherwise, you are not.
+    1. You customed the widget that extends FormField.
+    2. You are using widgets from the framework or customized widgets from packages.
 
 With the first one, you need to:
 
@@ -101,7 +107,7 @@ class _TextFormFieldState extends FormFieldState<String>
 
 With the second one, you need to:
 
-* Wrap the widget that contains the form field by `FormFieldRegisteredWidget` and pass down values to these parameters: `registryId`, `validator`, and `buidler`. The `buidler` function takes `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments which you have to pass to the widget that is a form field.
+* Wrap the widget that contains the form field by `FormFieldRegisteredWidget` and pass down values to these parameters: `registryId`, `validator`, and `builder`. The `builder` function takes `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments which you have to pass to the widget that is a form field.
 
 An example with package [`date_field`](https://pub.dev/packages/date_field).
 
@@ -119,7 +125,7 @@ FormFieldRegisteredWidget(
 
     return null;
   },
-  buidler: (
+  builder: (
     GlobalKey<FormFieldState<DateTime>> formFieldKey,
     String? Function(DateTime?) validator,
   ) {

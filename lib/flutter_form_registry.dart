@@ -445,13 +445,13 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     implements _ScrollConfiguration {
   /// Creates a [FormFieldRegisteredWidget] widget.
   ///
-  /// The [registryId], [validator] and [buidler] parameters must not be null.
+  /// The [registryId], [validator] and [builder] parameters must not be null.
   const FormFieldRegisteredWidget({
     Key? key,
     required this.registryId,
     this.lookupPriority,
     required this.validator,
-    required this.buidler,
+    required this.builder,
     this.scrollDelay = _kScrollDelay,
     this.alignment = _kAlignment,
     this.duration = _kDuration,
@@ -491,7 +491,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
   final Widget Function(
     GlobalKey<FormFieldState<T>> formFieldKey,
     FormFieldValidator<T> validator,
-  ) buidler;
+  ) builder;
 
   @override
   final Duration? scrollDelay;
@@ -543,7 +543,7 @@ class _FormFieldRegisteredWidgetState<T>
 
   @override
   Widget build(BuildContext context) {
-    final result = widget.buidler(_key, _validator);
+    final result = widget.builder(_key, _validator);
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (_key.currentContext == null) {

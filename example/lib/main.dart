@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       FormFieldRegisteredWidget(
                         registryId: "No. $i",
                         validator: integerTextFieldValidator,
-                        buidler: (
+                        builder: (
                           GlobalKey<FormFieldState<String>> formFieldKey,
                           String? Function(String?) validator,
                         ) {
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     FormFieldRegisteredWidget(
                       registryId: 'No. 30',
                       validator: integerTextFieldValidator,
-                      buidler: (
+                      builder: (
                         GlobalKey<FormFieldState<String>> formFieldKey,
                         String? Function(String?) validator,
                       ) {
@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       FormFieldRegisteredWidget(
                         registryId: 'No. $i',
                         validator: integerTextFieldValidator,
-                        buidler: (
+                        builder: (
                           GlobalKey<FormFieldState<String>> formFieldKey,
                           String? Function(String?) validator,
                         ) {
