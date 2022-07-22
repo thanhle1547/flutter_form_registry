@@ -25,9 +25,9 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 
 ## 📦 Dependency
 
-* flutter sdk >= 3.0.0
+* flutter sdk >=1.17.0 <2.5.0
 
-* dart sdk >=2.17.0 <3.0.0
+* dart sdk >=2.12.0 <2.14.0
 
 ## 💽 Installation
 
