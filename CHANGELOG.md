@@ -1,3 +1,10 @@
+## 0.3.0
+
+* Change environmental requirements: minimum flutter version is 3.0.0
+
+* fix typo
+
+
 ## 0.2.0
 
 * **Add** scroll delay.

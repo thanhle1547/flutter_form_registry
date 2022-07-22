@@ -1,6 +1,6 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.2.0-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
@@ -22,6 +22,12 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 * Can auto-scroll to the first Form's invalid field.
 
 * Each registered FormField widget contains its key, error text and method to scroll its into view and check is it fully visible.
+
+## 📦 Dependency
+
+* flutter sdk >= 3.0.0
+
+* dart sdk >=2.17.0 <3.0.0
 
 ## 💽 Installation
 
