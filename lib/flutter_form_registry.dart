@@ -433,7 +433,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     if (!result &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstInvalid == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      SchedulerBinding.instance?.addPostFrameCallback((timeStamp) {
         _registeredField?.scrollToIntoView(
           delay: scrollDelay,
           alignment: alignment,
@@ -578,7 +578,7 @@ class _FormFieldRegisteredWidgetState<T>
   Widget build(BuildContext context) {
     final result = widget.builder(_key, _validator);
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (_key.currentContext == null) {
         _registryWidgetState?._unregister(_registeredField);
       } else {
@@ -597,7 +597,7 @@ class _FormFieldRegisteredWidgetState<T>
     _registryWidgetState =
         context.findAncestorStateOfType<FormRegistryWidgetState>();
     // _key.currentContext might be equal `null`
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (_registryWidgetState != null && _registeredField == null) {
         _registeredField = RegisteredField._(
           key: _key,
@@ -654,7 +654,7 @@ class _FormFieldRegisteredWidgetState<T>
     if (result != null &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstInvalid == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
+      SchedulerBinding.instance?.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
           delay: widget.scrollDelay,
           alignment: widget.alignment,
