@@ -5,6 +5,19 @@
 
 A workaround to track some FormFields in the tree.
 
+![Hashnode](https://cdn.hashnode.com/res/hashnode/image/upload/v1658517803882/gtdYDSGSi.gif?w=1600&h=840&fit=crop&crop=entropy&auto=format,compress&gif-q=60&format=webm)
+
+<p align="center">
+  Read my article on
+</p>
+
+<p align="center">
+  <a href="https://thanhle.hashnode.dev/flutter-scrolling-to-the-first-invalid-form-field">
+    <img src="https://img.shields.io/badge/Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white" alt="Hashnode"></img>
+  </a>
+</p>
+
+
 -----
 
 Do you want functionality like scrolling to the first invalid form?
