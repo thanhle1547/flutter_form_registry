@@ -52,8 +52,9 @@ For the older flutter sdk:
 dependencies:
 
   flutter_form_registry:
-      git:
-        url: https://github.com/thanhle1547/flutter_form_registry
+    git:
+      url: https://github.com/thanhle1547/flutter_form_registry
+      ref: flutter_below_3.3.0_above_=_2.5.0
 ```
 
 ## 📺 Usage
