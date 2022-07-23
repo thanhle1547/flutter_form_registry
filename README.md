@@ -1,9 +1,22 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.3.0-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.3.1-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
+
+![Hashnode](https://cdn.hashnode.com/res/hashnode/image/upload/v1658517803882/gtdYDSGSi.gif?w=1600&h=840&fit=crop&crop=entropy&auto=format,compress&gif-q=60&format=webm)
+
+<p align="center">
+  Read my article on
+</p>
+
+<p align="center">
+  <a href="https://thanhle.hashnode.dev/flutter-scrolling-to-the-first-invalid-form-field">
+    <img src="https://img.shields.io/badge/Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white" alt="Hashnode"></img>
+  </a>
+</p>
+
 
 -----
 
@@ -28,6 +41,10 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 * flutter sdk >=2.5.0 <3.0.0
 
 * dart sdk >=2.14.0 <2.17.0
+
+For the older flutter sdk:
+
+* [<2.5.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_2.5.0)
 
 ## 💽 Installation
 

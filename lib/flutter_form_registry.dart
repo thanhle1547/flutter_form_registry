@@ -459,8 +459,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
 /// To track the [FormField] widget whose state will be updated at its
 /// nearest ancestor [FormRegistryWidget].
-class FormFieldRegisteredWidget<T> extends StatefulWidget
-    implements _ScrollConfiguration {
+class FormFieldRegisteredWidget<T> extends StatefulWidget {
   /// Creates a [FormFieldRegisteredWidget] widget.
   ///
   /// The [registryId], [validator] and [builder] parameters must not be null.
@@ -471,11 +470,11 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     this.restorationId,
     required this.validator,
     required this.builder,
-    this.scrollDelay = _kScrollDelay,
-    this.alignment = _kAlignment,
-    this.duration = _kDuration,
-    this.curve = _kCurve,
-    this.alignmentPolicy = _kAlignmentPolicy,
+    this.scrollDelay,
+    this.alignment,
+    this.duration,
+    this.curve,
+    this.alignmentPolicy,
   }) : super(key: key);
 
   /// The identifier between other [FormField]s.
@@ -526,28 +525,23 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
     FormFieldValidator<T> validator,
   ) builder;
 
-  @override
   final Duration? scrollDelay;
 
   /// To decide where to align the visible object
   /// when applying [ScrollPositionAlignmentPolicy.explicit].
-  @override
-  final double alignment;
+  final double? alignment;
 
   /// The duration to use when applying the `duration` parameter of
   /// [ScrollPosition.ensureVisible].
-  @override
-  final Duration duration;
+  final Duration? duration;
 
   /// The curve to use when applying the `curve` parameter of
   /// [ScrollPosition.ensureVisible].
-  @override
-  final Curve curve;
+  final Curve? curve;
 
   /// The policy to use when applying the `alignment` parameter of
   /// [ScrollPosition.ensureVisible].
-  @override
-  final ScrollPositionAlignmentPolicy alignmentPolicy;
+  final ScrollPositionAlignmentPolicy? alignmentPolicy;
 
   @override
   State<FormFieldRegisteredWidget<T>> createState() =>
@@ -556,7 +550,8 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget
 
 /// State associated with a [FormFieldRegisteredWidget] widget.
 class _FormFieldRegisteredWidgetState<T>
-    extends State<FormFieldRegisteredWidget<T>> with RestorationMixin {
+    extends State<FormFieldRegisteredWidget<T>>
+    with _ScrollConfiguration, RestorationMixin {
   late final GlobalKey<FormFieldState<T>> _key;
 
   late FormRegistryWidgetState? _registryWidgetState;
@@ -566,6 +561,37 @@ class _FormFieldRegisteredWidgetState<T>
 
   bool get _autoScrollToFirstError =>
       _registryWidget?.autoScrollToFirstInvalid ?? false;
+
+  @override
+  Duration get scrollDelay =>
+      widget.scrollDelay ??
+      _registryWidget?.defaultScrollDelay ??
+      _kScrollDelay;
+
+  /// To decide where to align the visible object
+  /// when applying [ScrollPositionAlignmentPolicy.explicit].
+  @override
+  double get alignment =>
+      widget.alignment ?? _registryWidget?.defaultAlignment ?? _kAlignment;
+
+  /// The duration to use when applying the `duration` parameter of
+  /// [ScrollPosition.ensureVisible].
+  @override
+  Duration get duration =>
+      widget.duration ?? _registryWidget?.defaultDuration ?? _kDuration;
+
+  /// The curve to use when applying the `curve` parameter of
+  /// [ScrollPosition.ensureVisible].
+  @override
+  Curve get curve => widget.curve ?? _registryWidget?.defaultCurve ?? _kCurve;
+
+  /// The policy to use when applying the `alignment` parameter of
+  /// [ScrollPosition.ensureVisible].
+  @override
+  ScrollPositionAlignmentPolicy get alignmentPolicy =>
+      widget.alignmentPolicy ??
+      _registryWidget?.defaultAlignmentPolicy ??
+      _kAlignmentPolicy;
 
   @override
   void initState() {
@@ -604,7 +630,7 @@ class _FormFieldRegisteredWidgetState<T>
           id: widget.registryId,
           priority: widget.lookupPriority,
           context: _key.currentContext!,
-          scrollConfiguration: widget,
+          scrollConfiguration: this,
         );
 
         _registryWidgetState!._register(_registeredField!);
@@ -656,11 +682,11 @@ class _FormFieldRegisteredWidgetState<T>
         _registryWidgetState?.firstInvalid == _registeredField) {
       SchedulerBinding.instance?.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
-          delay: widget.scrollDelay,
-          alignment: widget.alignment,
-          duration: widget.duration,
-          curve: widget.curve,
-          alignmentPolicy: widget.alignmentPolicy,
+          delay: scrollDelay,
+          alignment: alignment,
+          duration: duration,
+          curve: curve,
+          alignmentPolicy: alignmentPolicy,
         );
       });
     }
