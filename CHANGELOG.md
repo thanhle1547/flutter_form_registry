@@ -1,3 +1,8 @@
+## 0.3.1
+
+* fix scrollToIntoView did not scroll exactly when using FormFieldRegisteredWidget
+
+
 ## 0.3.0
 
 * Change environmental requirements: minimum flutter version is 3.0.0
