@@ -376,20 +376,22 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     _registryWidgetState =
         context.findAncestorStateOfType<FormRegistryWidgetState>();
     if (_registryWidgetState != null && _registeredField == null) {
-      final formMixin = widget is FormFieldRegisteredWidgetMixin
-          ? (widget as FormFieldRegisteredWidgetMixin)
-          : null;
+      assert(widget is FormFieldRegisteredWidgetMixin);
+
+      final formMixin = widget as FormFieldRegisteredWidgetMixin;
 
       _registeredField = RegisteredField._(
         key: widget.key,
-        id: formMixin?.registryId,
-        priority: formMixin?.lookupPriority,
+        id: formMixin.registryId,
+        priority: formMixin.lookupPriority,
         context: context,
         scrollConfiguration: this,
       );
 
       _registryWidgetState!._register(_registeredField!);
     }
+
+    _registeredField?._context = context;
   }
 
   @override

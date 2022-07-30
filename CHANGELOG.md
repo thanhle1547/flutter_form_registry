@@ -1,3 +1,8 @@
+## 0.3.2
+
+* update FormFieldStateRegisteredWidgetMixin.didChangeDependencies
+
+
 ## 0.3.1
 
 * fix scrollToIntoView did not scroll exactly when using FormFieldRegisteredWidget
