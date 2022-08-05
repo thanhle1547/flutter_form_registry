@@ -1,3 +1,8 @@
+## 0.3.3
+
+* using `FormRegistryWidget.maybeOf` instead of calling `findAncestorStateOfType` directly
+
+
 ## 0.3.2
 
 * update FormFieldStateRegisteredWidgetMixin.didChangeDependencies

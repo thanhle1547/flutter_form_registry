@@ -373,8 +373,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _registryWidgetState =
-        context.findAncestorStateOfType<FormRegistryWidgetState>();
+    _registryWidgetState = FormRegistryWidget.maybeOf(context);
     if (_registryWidgetState != null && _registeredField == null) {
       assert(widget is FormFieldRegisteredWidgetMixin);
 
@@ -589,8 +588,7 @@ class _FormFieldRegisteredWidgetState<T>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _registryWidgetState =
-        context.findAncestorStateOfType<FormRegistryWidgetState>();
+    _registryWidgetState = FormRegistryWidget.maybeOf(context);
     // _key.currentContext might be equal `null`
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (_registryWidgetState != null && _registeredField == null) {
