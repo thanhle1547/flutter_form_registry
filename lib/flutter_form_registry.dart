@@ -126,6 +126,9 @@ class RegisteredField {
 
     final double itemOffset;
 
+    final ScrollableState? scrollable = Scrollable.of(context);
+    assert(scrollable != null);
+
     if (viewport is RenderViewport) {
       itemOffset = reveal -
           viewport.offset.pixels +
@@ -133,11 +136,8 @@ class RegisteredField {
     } else if (viewport is RenderViewportBase) {
       itemOffset = reveal - viewport.offset.pixels + viewport.size.height;
     } else {
-      itemOffset = reveal;
+      itemOffset = reveal - (scrollable?.position.pixels ?? 0);
     }
-
-    final ScrollableState? scrollable = Scrollable.of(context);
-    assert(scrollable != null);
 
     final double leadingEdge = (itemOffset - excludeLeading).round() /
         scrollable!.position.viewportDimension;
