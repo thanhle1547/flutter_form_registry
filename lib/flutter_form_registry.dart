@@ -91,7 +91,9 @@ class RegisteredField {
   /// Check if this field is fully visible.
   ///
   /// To determine an accurate and precise result, [excludeLeading] and
-  /// [excludeTrailing] parameters must be provided.
+  /// [excludeTrailing] parameters need to provide. Because of this field
+  /// might be obscured by another widget (e.g. AppBar).
+  /// (It does not take widget opacity into account)
   ///
   /// e.g. When property [Scaffold.extendBodyBehindAppBar] is set to true which
   /// the height of the [body] is extended to include the height of the app bar.
