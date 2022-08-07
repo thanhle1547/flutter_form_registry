@@ -1,3 +1,8 @@
+## 0.3.4
+
+* fix: `RegisteredField.isFullyVisible` return false when viewport is `_RenderSingleChildViewport`
+
+
 ## 0.3.3
 
 * using `FormRegistryWidget.maybeOf` instead of calling `findAncestorStateOfType` directly
