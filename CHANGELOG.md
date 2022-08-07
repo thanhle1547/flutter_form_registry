@@ -1,3 +1,8 @@
+## 0.3.5
+
+* using ! operator
+
+
 ## 0.3.4
 
 * fix: `RegisteredField.isFullyVisible` return false when viewport is `_RenderSingleChildViewport`
