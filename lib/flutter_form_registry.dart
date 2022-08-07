@@ -136,7 +136,7 @@ class RegisteredField {
     } else if (viewport is RenderViewportBase) {
       itemOffset = reveal - viewport.offset.pixels + viewport.size.height;
     } else {
-      itemOffset = reveal - (scrollable?.position.pixels ?? 0);
+      itemOffset = reveal - scrollable!.position.pixels;
     }
 
     final double leadingEdge = (itemOffset - excludeLeading).round() /
