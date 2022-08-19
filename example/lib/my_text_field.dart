@@ -20,7 +20,7 @@ class MyTextField extends StatelessWidget {
     return TextFormField(
       key: fieldKey,
       initialValue: initial,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: validator,
     );
   }

@@ -66,7 +66,7 @@ To access all the registered form fields, give the `FormRegistryWidget` a `Globa
 
 These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `defaultAlignmentPolicy` let you setup the default behavior when scrolling to the error fields.
 
-2. There are two cases about your form field widget that you need to know before continuing setup:
+2. There are two cases regarding your form field widget that you need to know before continuing setup:
 
     1. You customed the widget that extends FormField.
     2. You are using widgets from the framework or customized widgets from packages.
@@ -165,3 +165,5 @@ FormFieldRegisteredWidget(
 If your actual form field has `restorationId`, you should be passing it to the `FormFieldRegisteredWidget` as well.
 
 You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
+
+In case, you have an existed form field key that cannot be removed because you (still) need to access its form field state, ..., pass that key to the `formFieldKey` parameter. 
