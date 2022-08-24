@@ -1,3 +1,8 @@
+## 0.4.0
+
+* Give a way to reuse or be capable of using existed form field key on `FormFieldRegisteredWidget` by adding that key to `formFieldKey`
+
+
 ## 0.3.5
 
 * using ! operator
