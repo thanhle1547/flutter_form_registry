@@ -31,11 +31,15 @@ abstract class _ScrollConfiguration {
   ScrollPositionAlignmentPolicy get alignmentPolicy;
 }
 
+const int _kLookupPriority = -1;
+
 class RegisteredField {
-  final Key? key;
+  Key? _key;
+  Key? get key => _key;
+
   final String? id;
 
-  final int _priority;
+  int _priority;
 
   // ignore: prefer_final_fields
   BuildContext _context;
@@ -44,12 +48,13 @@ class RegisteredField {
   final _ScrollConfiguration _scrollConfiguration;
 
   RegisteredField._({
-    this.key,
+    Key? key,
     this.id,
     int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
-  })  : _priority = priority ?? -1,
+  })  : _key = key,
+        _priority = priority ?? _kLookupPriority,
         _context = context,
         _scrollConfiguration = scrollConfiguration;
 
@@ -672,7 +677,25 @@ class _FormFieldRegisteredWidgetState<T>
   @override
   void didUpdateWidget(covariant FormFieldRegisteredWidget<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _key = widget.formFieldKey ?? GlobalKey<FormFieldState<T>>();
+
+    _registeredField?._priority = widget.lookupPriority ?? _kLookupPriority;
+
+    if (oldWidget.formFieldKey == null) {
+      if (widget.formFieldKey == null) return;
+
+      _key = widget.formFieldKey!;
+
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _registeredField?._key = _key;
+        _registeredField?._context = _key.currentContext!;
+      });
+    } else {
+      assert(
+        widget.formFieldKey != null,
+        'Once the [FormFieldRegisteredWidget.formFieldKey] has a non-null '
+        'value, it cannot be changed to null again',
+      );
+    }
   }
 
   @override
