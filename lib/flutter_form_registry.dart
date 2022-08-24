@@ -452,6 +452,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
     Key? key,
     required this.registryId,
     this.lookupPriority,
+    this.formFieldKey,
     required this.validator,
     required this.builder,
     this.scrollDelay,
@@ -473,6 +474,12 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
   /// The default value is `-1` if `null`.
   final int? lookupPriority;
 
+  /// The existed form field key
+  ///
+  /// A new `GlobalKey<FormFieldState<T>>`will be created if [formFieldKey]
+  /// changed to `null`.
+  final GlobalKey<FormFieldState<T>>? formFieldKey;
+
   /// An optional method that validates an input. Returns an error string to
   /// display if the input is invalid, or null otherwise.
   ///
@@ -488,8 +495,9 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
   /// parameter to a space.
   final FormFieldValidator<T> validator;
 
-  /// Function that returns the widget representing your form field. It is
-  /// passed the form field key as the key must be
+  /// The function that returns the widget representing your form field. It is
+  /// passed the form field key as the key must be (in case there is no existed
+  /// form field key, i.e, [formFieldKey] is null).
   final Widget Function(
     GlobalKey<FormFieldState<T>> formFieldKey,
     FormFieldValidator<T> validator,
@@ -522,7 +530,8 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
 class _FormFieldRegisteredWidgetState<T>
     extends State<FormFieldRegisteredWidget<T>>
     implements _ScrollConfiguration {
-  late final GlobalKey<FormFieldState<T>> _key;
+  late GlobalKey<FormFieldState<T>> _key =
+      widget.formFieldKey ?? GlobalKey<FormFieldState<T>>();
 
   late FormRegistryWidgetState? _registryWidgetState;
   FormRegistryWidget? get _registryWidget => _registryWidgetState?.widget;
@@ -562,13 +571,6 @@ class _FormFieldRegisteredWidgetState<T>
       widget.alignmentPolicy ??
       _registryWidget?.defaultAlignmentPolicy ??
       _kAlignmentPolicy;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _key = GlobalKey<FormFieldState<T>>();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -611,6 +613,12 @@ class _FormFieldRegisteredWidgetState<T>
   void deactivate() {
     super.deactivate();
     _registryWidgetState?._unregister(_registeredField);
+  }
+
+  @override
+  void didUpdateWidget(covariant FormFieldRegisteredWidget<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _key = widget.formFieldKey ?? GlobalKey<FormFieldState<T>>();
   }
 
   @override

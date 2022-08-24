@@ -39,6 +39,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final GlobalKey<FormRegistryWidgetState> _registerdKey = GlobalKey();
 
+  final List<GlobalKey<FormFieldState<String>>> fieldKeys = [
+    for (int i = 21; i < 40; i++) GlobalKey(),
+  ];
+
   String? integerTextFieldValidator(String? value) {
     if (value == null) {
       return 'Null!';
@@ -68,19 +72,19 @@ class _MyHomePageState extends State<MyHomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    for (int i = 0; i < 25; i++)
+                    for (int i = 0; i < 15; i++)
                       CustomTextFormField(
                         registryId: "No. $i",
                         initialValue: "$i",
                         validator: integerTextFieldValidator,
                       ),
                     CustomTextFormField(
-                      registryId: "No. 25",
-                      initialValue: 'twenty-five',
+                      registryId: "No. 15",
+                      initialValue: 'fifteen',
                       validator: integerTextFieldValidator,
                     ),
                     //
-                    for (int i = 26; i < 30; i++)
+                    for (int i = 16; i < 20; i++)
                       FormFieldRegisteredWidget(
                         registryId: "No. $i",
                         validator: integerTextFieldValidator,
@@ -96,30 +100,55 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       ),
                     FormFieldRegisteredWidget(
-                      registryId: 'No. 30',
+                      registryId: 'No. 20',
                       validator: integerTextFieldValidator,
                       builder: (
                         GlobalKey<FormFieldState<String>> formFieldKey,
                         String? Function(String?) validator,
                       ) {
                         return MyTextField(
-                          initial: '30',
+                          initial: 'twenty',
                           fieldKey: formFieldKey,
                           validator: validator,
                         );
                       },
                     ),
-                    for (int i = 31; i < 60; i++)
+                    //
+                    for (int i = 21; i < 25; i++)
                       FormFieldRegisteredWidget(
                         registryId: 'No. $i',
+                        formFieldKey: fieldKeys[i - 21],
                         validator: integerTextFieldValidator,
-                        builder: (
-                          GlobalKey<FormFieldState<String>> formFieldKey,
-                          String? Function(String?) validator,
-                        ) {
+                        builder: (_, String? Function(String?) validator) {
                           return MyTextField(
                             initial: "$i",
-                            fieldKey: formFieldKey,
+                            fieldKey: fieldKeys[i - 21],
+                            validator: validator,
+                          );
+                        },
+                      ),
+                    FormFieldRegisteredWidget(
+                      registryId: 'No. 25',
+                      formFieldKey: fieldKeys[25 - 21],
+                      validator: integerTextFieldValidator,
+                      builder: (_, String? Function(String?) validator) {
+                        return MyTextField(
+                          initial: 'twenty-five',
+                          fieldKey: fieldKeys[25 - 21],
+                          validator: validator,
+                        );
+                      },
+                    ),
+                    //
+                    for (int i = 26; i < 40; i++)
+                      FormFieldRegisteredWidget(
+                        registryId: 'No. $i',
+                        formFieldKey: fieldKeys[i - 21],
+                        validator: integerTextFieldValidator,
+                        builder: (_, String? Function(String?) validator) {
+                          return MyTextField(
+                            initial: "$i",
+                            fieldKey: fieldKeys[i - 21],
                             validator: validator,
                           );
                         },
