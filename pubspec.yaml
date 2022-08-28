@@ -1,6 +1,6 @@
 name: flutter_form_registry
 description: A workaround to track some FormFields in the tree.
-version: 0.4.1
+version: 0.4.2
 homepage:
 
 environment:
