@@ -501,7 +501,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
   final FormFieldValidator<T> validator;
 
   /// The function that returns the widget representing your form field. It is
-  /// passed the form field key as the key must be (in case there is no existed
+  /// passed the form field key as the key must be (in case there is no existing
   /// form field key, i.e, [formFieldKey] is null).
   final Widget Function(
     GlobalKey<FormFieldState<T>> formFieldKey,

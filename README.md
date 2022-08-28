@@ -1,6 +1,6 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.4.1-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.4.2-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
@@ -68,7 +68,7 @@ These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `default
 
 With the first one, you need to:
 
-* Use the `FormFieldRegisteredWidgetMixin` for the class that extends `FormField` and override `registryId` and `lookupPriority`. This `registryId` used to identify between other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate. When [FormField] visibility changes (e.g. from invisible to visible), it will be registered as the last one in the set. So when lookup for the first invalid field, which might be this one, but you got another. If you consider this an issue, all you need to do is to set the `lookupPriority` to arrange this [FormField].
+* Use the `FormFieldRegisteredWidgetMixin` for the class that extends `FormField` and override `registryId` and `lookupPriority`. This `registryId` used to identify other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate. When [FormField] visibility changes (e.g. from invisible to visible), it will be registered as the last one in the set. So when lookup for the first invalid field, which might be this one, but you got another. If you consider this an issue, all you need to do is to set the `lookupPriority` to arrange this [FormField].
 
 ```dart
 class CustomTextFormField extends FormField<String>
@@ -161,4 +161,4 @@ If your actual form field has `restorationId`, you should be passing it to the `
 
 You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
 
-In case, you have an existed form field key that cannot be removed because you (still) need to access its form field state, ..., pass that key to the `formFieldKey` parameter. 
+In case, you have an existing form field key that cannot be removed because you (still) need to access its form field state, ..., pass that key to the `formFieldKey` parameter. 
