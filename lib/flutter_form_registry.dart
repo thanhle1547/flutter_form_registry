@@ -631,7 +631,7 @@ class _FormFieldRegisteredWidgetState<T>
 
       _key = widget.formFieldKey!;
 
-      SchedulerBinding.instance.addPostFrameCallback((_) {
+      SchedulerBinding.instance?.addPostFrameCallback((_) {
         _registeredField?._key = _key;
         _registeredField?._context = _key.currentContext!;
       });
