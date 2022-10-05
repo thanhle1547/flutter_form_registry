@@ -612,7 +612,7 @@ class _FormFieldRegisteredWidgetState<T>
 
   @override
   Widget build(BuildContext context) {
-    final result = widget.builder(_key, _validator);
+    final result = widget.builder(_key);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (_key.currentContext == null) {
@@ -705,25 +705,4 @@ class _FormFieldRegisteredWidgetState<T>
     super.dispose();
   }
 
-  String? _validator(T? value) {
-    final String? result = widget.validator(value);
-
-    _registeredField?._errorText = result;
-
-    if (result != null &&
-        _autoScrollToFirstError &&
-        _registryWidgetState?.firstInvalid == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _registeredField?.scrollToIntoView(
-          delay: scrollDelay,
-          alignment: alignment,
-          duration: duration,
-          curve: curve,
-          alignmentPolicy: alignmentPolicy,
-        );
-      });
-    }
-
-    return result;
-  }
 }
