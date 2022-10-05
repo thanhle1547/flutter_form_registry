@@ -83,9 +83,9 @@ class RegisteredField {
       () {
         Scrollable.ensureVisible(
           context,
-          alignment: alignment ?? _scrollConfiguration.alignment,
+          alignment:_scrollConfiguration.alignment,
           duration: duration ?? _scrollConfiguration.duration,
-          curve: curve ?? _scrollConfiguration.curve,
+          curve:_scrollConfiguration.curve,
           alignmentPolicy:
               alignmentPolicy ?? _scrollConfiguration.alignmentPolicy,
         );
