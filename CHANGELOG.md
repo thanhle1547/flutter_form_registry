@@ -1,3 +1,9 @@
+## 0.4.3
+
+* update docs
+* fix `hashValues` was deprecated
+
+
 ## 0.4.2
 
 * update docs
