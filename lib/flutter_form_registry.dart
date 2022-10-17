@@ -4,10 +4,29 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+/// The default value of [FormRegistryWidget.defaultScrollDelay],
+/// [FormFieldStateRegisteredWidgetMixin.scrollDelay],
+/// [_FormFieldRegisteredWidgetState.scrollDelay].
 const Duration _kScrollDelay = Duration.zero;
+
+/// The default value of [FormRegistryWidget.defaultAlignment],
+/// [FormFieldStateRegisteredWidgetMixin.alignment],
+/// [_FormFieldRegisteredWidgetState.alignment].
 const double _kAlignment = 0.0;
+
+/// The default value of [FormRegistryWidget.defaultDuration],
+/// [FormFieldStateRegisteredWidgetMixin.duration],
+/// [_FormFieldRegisteredWidgetState.duration].
 const Duration _kDuration = Duration.zero;
+
+/// The default value of [FormRegistryWidget.defaultCurve],
+/// [FormFieldStateRegisteredWidgetMixin.curve],
+/// [_FormFieldRegisteredWidgetState.curve].
 const Curve _kCurve = Curves.ease;
+
+/// The default value of [FormRegistryWidget.defaultAlignmentPolicy],
+/// [FormFieldStateRegisteredWidgetMixin.alignmentPolicy],
+/// [_FormFieldRegisteredWidgetState.alignmentPolicy].
 const ScrollPositionAlignmentPolicy _kAlignmentPolicy =
     ScrollPositionAlignmentPolicy.explicit;
 
@@ -31,6 +50,9 @@ abstract class _ScrollConfiguration {
   ScrollPositionAlignmentPolicy get alignmentPolicy;
 }
 
+/// The default value of [FormFieldRegisteredWidget.lookupPriority],
+/// [FormFieldRegisteredWidgetMixin.lookupPriority],
+/// [RegisteredField._priority].
 const int _kLookupPriority = -1;
 
 class RegisteredField {
@@ -96,7 +118,7 @@ class RegisteredField {
   /// Check if this field is fully visible.
   ///
   /// To determine an accurate and precise result, [excludeLeading] and
-  /// [excludeTrailing] parameters need to provide. Because of this field
+  /// [excludeTrailing] parameters need to provide. Because this field
   /// might be obscured by another widget (e.g. AppBar).
   /// (It does not take widget opacity into account)
   ///
@@ -161,7 +183,7 @@ class RegisteredField {
   }
 
   @override
-  int get hashCode => hashValues(key, id);
+  int get hashCode => Object.hash(key, id);
 }
 
 /// A registry to track some [FormField]s in the tree.
@@ -332,13 +354,19 @@ mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
   String? get registryId;
 
-  /// When [FormField] visibility changes (e.g. from invisible to visible),
+  /// When [FormField] visibility changes (e.g. from invisible to visible by
+  /// using the [Visibility] widget), or after a new one is inserted,
   /// it will be registered as the last one in the set. So when lookup for
-  /// the first invalid field, which might be this one, but you got another.
+  /// the first invalid field, you got another which might be this one.
   /// If you consider this an issue, all you need to do is to set the priority
   /// to arrange this [FormField].
   ///
-  /// The default value is `-1` if `null`.
+  /// Default to `-1` if `null`.
+  ///
+  /// Helping determines the placement of this widget in a sequence of widgets
+  /// by assigning a numerical value.
+  ///
+  /// Lower values will be lookup first.
   int? get lookupPriority;
 }
 
@@ -489,13 +517,19 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
   /// The identifier between other [FormField]s.
   final String registryId;
 
-  /// When [FormField] visibility changes (e.g. from invisible to visible),
+  /// When [FormField] visibility changes (e.g. from invisible to visible by
+  /// using the [Visibility] widget), or after a new one is inserted,
   /// it will be registered as the last one in the set. So when lookup for
-  /// the first invalid field, which might be this one, but you got another.
+  /// the first invalid field, you got another which might be this one.
   /// If you consider this an issue, all you need to do is to set the priority
   /// to arrange this [FormField].
   ///
-  /// The default value is `-1` if `null`.
+  /// Default to `-1` if `null`.
+  ///
+  /// Helping determines the placement of this widget in a sequence of widgets
+  /// by assigning a numerical value.
+  ///
+  /// Lower values will be lookup first.
   final int? lookupPriority;
 
   /// The existed form field key
