@@ -183,7 +183,7 @@ class RegisteredField {
   }
 
   @override
-  int get hashCode => Object.hash(key, id);
+  int get hashCode => hashValues(key, id);
 }
 
 /// A registry to track some [FormField]s in the tree.
