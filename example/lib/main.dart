@@ -74,19 +74,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: <Widget>[
                     for (int i = 0; i < 15; i++)
                       CustomTextFormField(
-                        registryId: "No. $i",
+                        registrarId: "No. $i",
                         initialValue: "$i",
                         validator: integerTextFieldValidator,
                       ),
                     CustomTextFormField(
-                      registryId: "No. 15",
+                      registrarId: "No. 15",
                       initialValue: 'fifteen',
                       validator: integerTextFieldValidator,
                     ),
                     //
                     for (int i = 16; i < 20; i++)
-                      FormFieldRegisteredWidget(
-                        registryId: "No. $i",
+                      FormFieldRegistrant(
+                        registrarId: "No. $i",
                         validator: integerTextFieldValidator,
                         builder: (
                           GlobalKey<FormFieldState<String>> formFieldKey,
@@ -99,8 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         },
                       ),
-                    FormFieldRegisteredWidget(
-                      registryId: 'No. 20',
+                    FormFieldRegistrant(
+                      registrarId: 'No. 20',
                       validator: integerTextFieldValidator,
                       builder: (
                         GlobalKey<FormFieldState<String>> formFieldKey,
@@ -115,8 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     //
                     for (int i = 21; i < 25; i++)
-                      FormFieldRegisteredWidget(
-                        registryId: 'No. $i',
+                      FormFieldRegistrant(
+                        registrarId: 'No. $i',
                         formFieldKey: fieldKeys[i - 21],
                         validator: integerTextFieldValidator,
                         builder: (_, String? Function(String?) validator) {
@@ -127,8 +127,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         },
                       ),
-                    FormFieldRegisteredWidget(
-                      registryId: 'No. 25',
+                    FormFieldRegistrant(
+                      registrarId: 'No. 25',
                       formFieldKey: fieldKeys[25 - 21],
                       validator: integerTextFieldValidator,
                       builder: (_, String? Function(String?) validator) {
@@ -141,8 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     //
                     for (int i = 26; i < 40; i++)
-                      FormFieldRegisteredWidget(
-                        registryId: 'No. $i',
+                      FormFieldRegistrant(
+                        registrarId: 'No. $i',
                         formFieldKey: fieldKeys[i - 21],
                         validator: integerTextFieldValidator,
                         builder: (_, String? Function(String?) validator) {

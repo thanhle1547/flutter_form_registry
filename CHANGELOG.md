@@ -1,5 +1,21 @@
 ## 0.4.3
 
+* **Breaking:**
+
+  * Rename `registryId` to `registrarId`
+
+  * rename `*RegisteredWidget` class by `*Registrant`
+
+    * `FormFieldRegisteredWidgetMixin` to `FormFieldRegistrantMixin`
+
+    * `FormFieldStateRegisteredWidgetMixin` to `FormFieldStateRegistrantMixin`
+
+    * `FormFieldRegisteredWidget` to `FormFieldRegistrant`
+
+* improve performance of `FormRegistryWidget.maybeOf` method
+
+## 0.4.3
+
 * update docs
 * fix `hashValues` was deprecated
 

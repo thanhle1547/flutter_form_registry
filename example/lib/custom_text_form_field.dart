@@ -119,7 +119,7 @@ import 'package:flutter_form_registry/flutter_form_registry.dart';
 ///    surround the actual text editing widget.
 ///  * Learn how to use a [TextEditingController] in one of our [cookbook recipes](https://flutter.dev/docs/cookbook/forms/text-field-changes#2-use-a-texteditingcontroller).
 class CustomTextFormField extends FormField<String>
-    with FormFieldRegisteredWidgetMixin {
+    with FormFieldRegistrantMixin {
   /// Creates a [FormField] that contains a [TextField].
   ///
   /// When a [controller] is specified, [initialValue] must be null (the
@@ -131,7 +131,7 @@ class CustomTextFormField extends FormField<String>
   /// and [new TextField], the constructor.
   CustomTextFormField({
     Key? key,
-    this.registryId,
+    this.registrarId,
     this.lookupPriority,
     this.controller,
     String? initialValue,
@@ -323,7 +323,7 @@ class CustomTextFormField extends FormField<String>
 }
 
 class _TextFormFieldState extends FormFieldState<String>
-    with FormFieldStateRegisteredWidgetMixin {
+    with FormFieldStateRegistrantMixin {
   TextEditingController? _controller;
 
   TextEditingController? get _effectiveController =>
