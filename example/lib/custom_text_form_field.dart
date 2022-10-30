@@ -307,7 +307,7 @@ class CustomTextFormField extends FormField<String>
         );
 
   @override
-  final String? registryId;
+  final String? registrarId;
 
   @override
   final int? lookupPriority;
