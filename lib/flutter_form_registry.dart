@@ -292,13 +292,18 @@ class FormRegistryWidget extends StatefulWidget {
   ///    encloses the given context. Also includes some sample code in its
   ///    documentation.
   static FormRegistryWidgetState? maybeOf(BuildContext context) {
-    return context.findAncestorStateOfType<FormRegistryWidgetState>();
+    return context
+        .dependOnInheritedWidgetOfExactType<_FormRegistryWidgetScope>()
+        ?._formRegistryWidgetState;
   }
 
   @override
   State<FormRegistryWidget> createState() => FormRegistryWidgetState();
 }
 
+/// State associated with an [FormRegistryWidget] widget.
+///
+/// Typically obtained using [FormRegistryWidget.of].
 class FormRegistryWidgetState extends State<FormRegistryWidget> {
   final List<RegisteredField> _registeredFields = [];
 
@@ -347,7 +352,26 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   void _unregister(RegisteredField? field) => _registeredFields.remove(field);
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    return _FormRegistryWidgetScope(
+      formRegistryWidgetState: this,
+      child: widget.child,
+    );
+  }
+}
+
+class _FormRegistryWidgetScope extends InheritedWidget {
+  const _FormRegistryWidgetScope({
+    required FormRegistryWidgetState formRegistryWidgetState,
+    required super.child,
+  }) : _formRegistryWidgetState = formRegistryWidgetState;
+
+  final FormRegistryWidgetState _formRegistryWidgetState;
+
+  @override
+  bool updateShouldNotify(_FormRegistryWidgetScope oldWidget) {
+    return _formRegistryWidgetState != oldWidget._formRegistryWidgetState;
+  }
 }
 
 mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
