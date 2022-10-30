@@ -363,8 +363,9 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 class _FormRegistryWidgetScope extends InheritedWidget {
   const _FormRegistryWidgetScope({
     required FormRegistryWidgetState formRegistryWidgetState,
-    required super.child,
-  }) : _formRegistryWidgetState = formRegistryWidgetState;
+    required Widget child,
+  })  : _formRegistryWidgetState = formRegistryWidgetState,
+        super(child: child);
 
   final FormRegistryWidgetState _formRegistryWidgetState;
 
