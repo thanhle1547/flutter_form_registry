@@ -376,7 +376,7 @@ class _FormRegistryWidgetScope extends InheritedWidget {
 
 mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
-  String? get registryId;
+  String? get registrarId;
 
   /// When [FormField] visibility changes (e.g. from invisible to visible by
   /// using the [Visibility] widget), or after a new one is inserted,
@@ -440,7 +440,7 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
       _registeredField = RegisteredField._(
         key: widget.key,
-        id: formMixin.registryId,
+        id: formMixin.registrarId,
         priority: formMixin.lookupPriority,
         context: context,
         scrollConfiguration: this,
@@ -522,10 +522,10 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 class FormFieldRegisteredWidget<T> extends StatefulWidget {
   /// Creates a [FormFieldRegisteredWidget] widget.
   ///
-  /// The [registryId], [validator] and [builder] parameters must not be null.
+  /// The [registrarId], [validator] and [builder] parameters must not be null.
   const FormFieldRegisteredWidget({
     Key? key,
-    required this.registryId,
+    required this.registrarId,
     this.lookupPriority,
     this.formFieldKey,
     this.restorationId,
@@ -539,7 +539,7 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
   }) : super(key: key);
 
   /// The identifier between other [FormField]s.
-  final String registryId;
+  final String registrarId;
 
   /// When [FormField] visibility changes (e.g. from invisible to visible by
   /// using the [Visibility] widget), or after a new one is inserted,
@@ -694,7 +694,7 @@ class _FormFieldRegisteredWidgetState<T>
       if (_registryWidgetState != null && _registeredField == null) {
         _registeredField = RegisteredField._(
           key: _key,
-          id: widget.registryId,
+          id: widget.registrarId,
           priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: this,
