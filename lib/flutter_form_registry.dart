@@ -5,28 +5,28 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 /// The default value of [FormRegistryWidget.defaultScrollDelay],
-/// [FormFieldStateRegisteredWidgetMixin.scrollDelay],
-/// [_FormFieldRegisteredWidgetState.scrollDelay].
+/// [FormFieldStateRegistrantMixin.scrollDelay],
+/// [_FormFieldRegistrantState.scrollDelay].
 const Duration _kScrollDelay = Duration.zero;
 
 /// The default value of [FormRegistryWidget.defaultAlignment],
-/// [FormFieldStateRegisteredWidgetMixin.alignment],
-/// [_FormFieldRegisteredWidgetState.alignment].
+/// [FormFieldStateRegistrantMixin.alignment],
+/// [_FormFieldRegistrantState.alignment].
 const double _kAlignment = 0.0;
 
 /// The default value of [FormRegistryWidget.defaultDuration],
-/// [FormFieldStateRegisteredWidgetMixin.duration],
-/// [_FormFieldRegisteredWidgetState.duration].
+/// [FormFieldStateRegistrantMixin.duration],
+/// [_FormFieldRegistrantState.duration].
 const Duration _kDuration = Duration.zero;
 
 /// The default value of [FormRegistryWidget.defaultCurve],
-/// [FormFieldStateRegisteredWidgetMixin.curve],
-/// [_FormFieldRegisteredWidgetState.curve].
+/// [FormFieldStateRegistrantMixin.curve],
+/// [_FormFieldRegistrantState.curve].
 const Curve _kCurve = Curves.ease;
 
 /// The default value of [FormRegistryWidget.defaultAlignmentPolicy],
-/// [FormFieldStateRegisteredWidgetMixin.alignmentPolicy],
-/// [_FormFieldRegisteredWidgetState.alignmentPolicy].
+/// [FormFieldStateRegistrantMixin.alignmentPolicy],
+/// [_FormFieldRegistrantState.alignmentPolicy].
 const ScrollPositionAlignmentPolicy _kAlignmentPolicy =
     ScrollPositionAlignmentPolicy.explicit;
 
@@ -50,8 +50,8 @@ abstract class _ScrollConfiguration {
   ScrollPositionAlignmentPolicy get alignmentPolicy;
 }
 
-/// The default value of [FormFieldRegisteredWidget.lookupPriority],
-/// [FormFieldRegisteredWidgetMixin.lookupPriority],
+/// The default value of [FormFieldRegistrant.lookupPriority],
+/// [FormFieldRegistrantMixin.lookupPriority],
 /// [RegisteredField._priority].
 const int _kLookupPriority = -1;
 
@@ -374,7 +374,7 @@ class _FormRegistryWidgetScope extends InheritedWidget {
   }
 }
 
-mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
+mixin FormFieldRegistrantMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
   String? get registrarId;
 
@@ -394,7 +394,7 @@ mixin FormFieldRegisteredWidgetMixin<T> on FormField<T> {
   int? get lookupPriority;
 }
 
-mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
+mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
     implements _ScrollConfiguration {
   late FormRegistryWidgetState? _registryWidgetState;
   FormRegistryWidget? get _registryWidget => _registryWidgetState?.widget;
@@ -434,9 +434,9 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
     super.didChangeDependencies();
     _registryWidgetState = FormRegistryWidget.maybeOf(context);
     if (_registryWidgetState != null && _registeredField == null) {
-      assert(widget is FormFieldRegisteredWidgetMixin);
+      assert(widget is FormFieldRegistrantMixin);
 
-      final formMixin = widget as FormFieldRegisteredWidgetMixin;
+      final formMixin = widget as FormFieldRegistrantMixin;
 
       _registeredField = RegisteredField._(
         key: widget.key,
@@ -519,11 +519,11 @@ mixin FormFieldStateRegisteredWidgetMixin<T> on FormFieldState<T>
 
 /// To track the [FormField] widget whose state will be updated at its
 /// nearest ancestor [FormRegistryWidget].
-class FormFieldRegisteredWidget<T> extends StatefulWidget {
-  /// Creates a [FormFieldRegisteredWidget] widget.
+class FormFieldRegistrant<T> extends StatefulWidget {
+  /// Creates a [FormFieldRegistrant] widget.
   ///
   /// The [registrarId], [validator] and [builder] parameters must not be null.
-  const FormFieldRegisteredWidget({
+  const FormFieldRegistrant({
     Key? key,
     required this.registrarId,
     this.lookupPriority,
@@ -618,13 +618,11 @@ class FormFieldRegisteredWidget<T> extends StatefulWidget {
   final ScrollPositionAlignmentPolicy? alignmentPolicy;
 
   @override
-  State<FormFieldRegisteredWidget<T>> createState() =>
-      _FormFieldRegisteredWidgetState<T>();
+  State<FormFieldRegistrant<T>> createState() => _FormFieldRegistrantState<T>();
 }
 
-/// State associated with a [FormFieldRegisteredWidget] widget.
-class _FormFieldRegisteredWidgetState<T>
-    extends State<FormFieldRegisteredWidget<T>>
+/// State associated with a [FormFieldRegistrant] widget.
+class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     with _ScrollConfiguration, RestorationMixin {
   late GlobalKey<FormFieldState<T>> _key =
       widget.formFieldKey ?? GlobalKey<FormFieldState<T>>();
@@ -733,7 +731,7 @@ class _FormFieldRegisteredWidgetState<T>
   }
 
   @override
-  void didUpdateWidget(covariant FormFieldRegisteredWidget<T> oldWidget) {
+  void didUpdateWidget(covariant FormFieldRegistrant<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     _registeredField?._priority = widget.lookupPriority ?? _kLookupPriority;

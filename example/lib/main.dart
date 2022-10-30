@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     //
                     for (int i = 16; i < 20; i++)
-                      FormFieldRegisteredWidget(
+                      FormFieldRegistrant(
                         registrarId: "No. $i",
                         validator: integerTextFieldValidator,
                         builder: (
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         },
                       ),
-                    FormFieldRegisteredWidget(
+                    FormFieldRegistrant(
                       registrarId: 'No. 20',
                       validator: integerTextFieldValidator,
                       builder: (
@@ -115,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     //
                     for (int i = 21; i < 25; i++)
-                      FormFieldRegisteredWidget(
+                      FormFieldRegistrant(
                         registrarId: 'No. $i',
                         formFieldKey: fieldKeys[i - 21],
                         validator: integerTextFieldValidator,
@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         },
                       ),
-                    FormFieldRegisteredWidget(
+                    FormFieldRegistrant(
                       registrarId: 'No. 25',
                       formFieldKey: fieldKeys[25 - 21],
                       validator: integerTextFieldValidator,
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     //
                     for (int i = 26; i < 40; i++)
-                      FormFieldRegisteredWidget(
+                      FormFieldRegistrant(
                         registrarId: 'No. $i',
                         formFieldKey: fieldKeys[i - 21],
                         validator: integerTextFieldValidator,
