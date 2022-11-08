@@ -57,6 +57,7 @@ const int _kLookupPriority = -1;
 
 class RegisteredField {
   Key? _key;
+  /// The key of the form field
   Key? get key => _key;
 
   final String? id;
@@ -65,9 +66,29 @@ class RegisteredField {
 
   // ignore: prefer_final_fields
   BuildContext _context;
+  /// The context of the form field
   BuildContext get context => _context;
 
   final _ScrollConfiguration _scrollConfiguration;
+
+  /// True if the current value is valid.
+  ///
+  /// This will not set [errorText] or [hasError] and it will not update
+  /// error display.
+  ///
+  /// See also:
+  ///
+  ///  * [validate], which may update [errorText] and [hasError].
+  final bool Function() isValid;
+
+  /// Calls [FormField.validator] to set the [errorText]. Returns true if there
+  /// were no errors.
+  ///
+  /// See also:
+  ///
+  ///  * [isValid], which passively gets the validity without setting
+  ///    [errorText] or [hasError].
+  final bool Function() validate;
 
   RegisteredField._({
     Key? key,
@@ -75,15 +96,20 @@ class RegisteredField {
     int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
+    required this.isValid,
+    required this.validate,
   })  : _key = key,
         _priority = priority ?? _kLookupPriority,
         _context = context,
         _scrollConfiguration = scrollConfiguration;
 
   String? _errorText;
-
+  /// The current validation error returned by the [FormField.validator]
+  /// callback, or null if no errors have been triggered. This only updates when
+  /// [validate] is called.
   String? get errorText => _errorText;
 
+  /// True if this field has any validation errors.
   bool get hasError => _errorText != null;
 
   /// Animates the position such that the given object is as visible as possible
@@ -306,9 +332,10 @@ class FormRegistryWidget extends StatefulWidget {
 /// Typically obtained using [FormRegistryWidget.of].
 class FormRegistryWidgetState extends State<FormRegistryWidget> {
   final List<RegisteredField> _registeredFields = [];
+  final Map<int, RegisteredField> _noPriority = {};
 
   List<RegisteredField> get registeredFields =>
-      List.unmodifiable(_registeredFields.toList());
+      List.unmodifiable(_registeredFields);
 
   RegisteredField? get firstInvalid {
     for (final RegisteredField field in _registeredFields) {
@@ -318,11 +345,19 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
     return null;
   }
 
+  List<RegisteredField> get invalidFields => _registeredFields.isEmpty
+      ? const <RegisteredField>[]
+      : List.unmodifiable(_registeredFields.where((e) => e.hasError));
+
+  RegisteredField? getFieldBy(String registrarId) =>
+      _noPriority[registrarId.hashCode];
+
   void _register(RegisteredField field) {
     if (_registeredFields.contains(field)) return;
 
     if (field._priority == -1 || _registeredFields.isEmpty) {
       _registeredFields.add(field);
+      _tryAddEntry(field.id, field);
       return;
     }
 
@@ -332,11 +367,13 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 
       if (incomming < current) {
         _registeredFields.insert(i, field);
+        _tryAddEntry(field.id, field);
         return;
       }
 
       if (i + 1 == _registeredFields.length) {
         _registeredFields.add(field);
+        _tryAddEntry(field.id, field);
         return;
       }
 
@@ -344,12 +381,22 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 
       if (incomming >= current && (incomming < next || next == -1)) {
         _registeredFields.insert(i + 1, field);
+        _tryAddEntry(field.id, field);
         return;
       }
     }
   }
 
-  void _unregister(RegisteredField? field) => _registeredFields.remove(field);
+  void _tryAddEntry(String? id, RegisteredField field) {
+    if (id == null) return;
+
+    _noPriority[id.hashCode] = field;
+  }
+
+  void _unregister(RegisteredField? field) {
+    _registeredFields.remove(field);
+    _noPriority.remove(field?.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -445,6 +492,8 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
         priority: formMixin.lookupPriority,
         context: context,
         scrollConfiguration: this,
+        isValid: () => isValid,
+        validate: validate,
       );
 
       _registryWidgetState!._register(_registeredField!);
@@ -664,6 +713,8 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
           priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: this,
+          isValid: () => _key.currentState!.isValid,
+          validate: _key.currentState!.validate,
         );
 
         _registryWidgetState!._register(_registeredField!);

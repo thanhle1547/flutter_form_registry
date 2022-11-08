@@ -1,4 +1,12 @@
-## 0.4.3
+## 0.6.0
+
+* **Add** `FormRegistryWidgetState.invalidFields` getter.
+* **Add** `FormRegistryWidgetState.getFieldBy()` method.
+* **Add** `RegisteredField.isValid()` and `validate()` methods.
+* update docs
+
+
+## 0.5.0
 
 * **Breaking:**
 
@@ -13,6 +21,7 @@
     * `FormFieldRegisteredWidget` to `FormFieldRegistrant`
 
 * improve performance of `FormRegistryWidget.maybeOf` method
+
 
 ## 0.4.3
 
