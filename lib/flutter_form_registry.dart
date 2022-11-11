@@ -746,7 +746,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     } else {
       assert(
         widget.formFieldKey != null,
-        'Once the [FormFieldRegisteredWidget.formFieldKey] has a non-null '
+        'Once the [FormFieldRegistrant.formFieldKey] has a non-null '
         'value, it cannot be changed to null again',
       );
     }
