@@ -1,6 +1,6 @@
 ## flutter_form_registry
 
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.6.0-brightgreen.svg)
+![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.6.1-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some FormFields in the tree.
@@ -24,7 +24,7 @@ Do you want functionality like scrolling to the first invalid form?
 
 You don't want to maintain a list of keys for your form fields by yourself?
 
-Because we cannot access registered FormFieldState in the Form widget by the GlobalKey<FormState> to determine which FormFieldState has validated error. So... To make fields property of FieldState publicity, please give a 👍 to the issue [#67283](https://github.com/flutter/flutter/issues/67283).
+Because we cannot access registered `FormFieldState` in the Form widget by the `GlobalKey<FormState>` to determine which `FormFieldState` has validated error. So... To make fields property of `FieldState` publicity, please give a 👍 to the issue [#67283](https://github.com/flutter/flutter/issues/67283).
 
 In while, maybe this workaround will help you. Beside [flutter_form_builder](https://pub.dev/packages/flutter_form_builder), [ready_form](https://pub.dev/packages/ready_form).
 
@@ -72,11 +72,11 @@ These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `default
 
 With the first one, you need to:
 
-* Use the `FormFieldRegisteredWidgetMixin` for the class that extends `FormField` and override `registryId` and `lookupPriority`. This `registryId` used to identify other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate. When [FormField] visibility changes (e.g. from invisible to visible), it will be registered as the last one in the set. So when lookup for the first invalid field, which might be this one, but you got another. If you consider this an issue, all you need to do is to set the `lookupPriority` to arrange this [FormField].
+* Use the `FormFieldRegistrantMixin` for the class that extends `FormField` and override `registryId` and `lookupPriority`. This `registryId` used to identify other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate. When `FormField` visibility changes (e.g. from invisible to visible), it will be registered as the last one in the set. So when lookup for the first invalid field, which might be this one, but you got another. If you consider this an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
 
 ```dart
 class CustomTextFormField extends FormField<String>
-    with FormFieldRegisteredWidgetMixin {
+    with FormFieldRegistrantMixin {
   CustomTextFormField({
     Key? key,
     this.registryId,
@@ -92,11 +92,11 @@ class CustomTextFormField extends FormField<String>
 }
 ```
 
-* Use the `FormFieldStateRegisteredWidgetMixin` for the class that extends `FormFieldState`.
+* Use the `FormFieldStateRegistrantMixin` for the class that extends `FormFieldState`.
 
 ```dart
 class _CustomTextFormFieldState extends FormFieldState<String>
-    with FormFieldStateRegisteredWidgetMixin {
+    with FormFieldStateRegistrantMixin {
   // some code ...
 }
 ```
@@ -105,7 +105,7 @@ You can also override the default behavior that has been set up in `FormRegistry
 
 ```dart
 class _TextFormFieldState extends FormFieldState<String>
-    with FormFieldStateRegisteredWidgetMixin {
+    with FormFieldStateRegistrantMixin {
   @override
   double get alignment => yourAlignment;
 
@@ -124,12 +124,12 @@ class _TextFormFieldState extends FormFieldState<String>
 
 With the second one, you need to:
 
-* Wrap the widget that contains the form field by `FormFieldRegisteredWidget` and pass down values to these parameters: `registryId`, `validator`, and `builder`. The `builder` function takes `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments which you have to pass to the widget that is a form field.
+* Wrap the widget that contains the form field by `FormFieldRegistrant` and pass down values to these parameters: `registryId`, `validator`, and `builder`. The `builder` function takes `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments which you have to pass to the widget that is a form field.
 
 An example with package [`date_field`](https://pub.dev/packages/date_field).
 
 ```dart
-FormFieldRegisteredWidget(
+FormFieldRegistrant(
   registryId: 'select date',
   validator: (DateTime? value) {
     if (value == null) {
@@ -161,7 +161,7 @@ FormFieldRegisteredWidget(
 ),
 ```
 
-If your actual form field has `restorationId`, you should be passing it to the `FormFieldRegisteredWidget` as well.
+If your actual form field has `restorationId`, you should be passing it to the `FormFieldRegistrant` as well.
 
 You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
 

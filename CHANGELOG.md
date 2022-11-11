@@ -1,3 +1,8 @@
+## 0.6.1
+
+* update docs
+
+
 ## 0.6.0
 
 * **Add** `FormRegistryWidgetState.invalidFields` getter.
