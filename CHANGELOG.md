@@ -1,3 +1,11 @@
+## 0.6.2
+
+* No code changes.
+* Bump to version 0.6.2.
+* Update pubspec decription.
+* Update README.
+
+
 ## 0.6.1
 
 * update docs
