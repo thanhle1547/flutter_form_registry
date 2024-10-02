@@ -1,5 +1,7 @@
 library flutter_form_registry;
 
+import 'dart:collection';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -336,8 +338,8 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   final List<RegisteredField> _registeredFields = [];
   final Map<int, RegisteredField> _noPriority = {};
 
-  List<RegisteredField> get registeredFields =>
-      List.unmodifiable(_registeredFields);
+  UnmodifiableListView<RegisteredField> get registeredFields =>
+      UnmodifiableListView(_registeredFields);
 
   RegisteredField? get firstInvalid {
     for (final RegisteredField field in _registeredFields) {
@@ -347,9 +349,9 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
     return null;
   }
 
-  List<RegisteredField> get invalidFields => _registeredFields.isEmpty
-      ? const <RegisteredField>[]
-      : List.unmodifiable(_registeredFields.where((e) => e.hasError));
+  UnmodifiableListView<RegisteredField> get invalidFields => _registeredFields.isEmpty
+      ? UnmodifiableListView(const <RegisteredField>[])
+      : UnmodifiableListView(_registeredFields.where((e) => e.hasError));
 
   RegisteredField? getFieldBy(String registrarId) =>
       _noPriority[registrarId.hashCode];
