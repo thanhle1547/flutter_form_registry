@@ -1,3 +1,8 @@
+## 0.6.4
+
+* Updates minimum supported SDK version to Flutter 3.7/Dart 2.19.
+
+
 ## 0.6.3
 
 * Fix the form field registrant did not fully unregister.
