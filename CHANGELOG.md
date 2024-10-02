@@ -1,3 +1,10 @@
+## 0.6.5
+
+* No code changes.
+* Bump to version 0.6.5.
+* Update README.
+
+
 ## 0.6.4
 
 * Updates minimum supported SDK version to Flutter 3.7/Dart 2.19.
