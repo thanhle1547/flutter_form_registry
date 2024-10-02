@@ -66,14 +66,17 @@ To access all the registered form fields, give the `FormRegistryWidget` a `Globa
 
 These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `defaultAlignmentPolicy` let you setup the default behavior when scrolling to the error fields.
 
-2. There are two cases regarding your form field widget that you need to know before continuing setup:
+2. There are two cases regarding your form field widgets that you need to know before continuing:
 
-    1. You customed the widget that extends FormField.
-    2. You are using widgets from the framework or customized widgets from packages.
+    1. You have customized a widget that extends FormField.
+    2. You are using widgets from the framework or customizing widgets from a package.
 
-With the first one, you need to:
+With the first one, you should:
 
-* Use the `FormFieldRegistrantMixin` for the class that extends `FormField` and override `registryId` and `lookupPriority`. This `registryId` used to identify other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate. When `FormField` visibility changes (e.g. from invisible to visible), it will be registered as the last one in the set. So when lookup for the first invalid field, which might be this one, but you got another. If you consider this an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
+* Use the mixin `FormFieldRegistrantMixin` in the class that extends `FormField`.
+* Override `registryId` and `lookupPriority`.
+* This `registryId` is used to identify between other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate.
+* When the visibility of a `FormField` changes (e.g. from being invisible to visible using the `Visibility` widget), or when it is reinserted into the widget tree (activate) after having been removed (deactivate), it will be registered as the last one in the set. Consequently, when looking for the first invalid field, this `FormField` will not be retrieved, but another one will be. If you consider this as an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
 
 ```dart
 class CustomTextFormField extends FormField<String>
@@ -81,15 +84,19 @@ class CustomTextFormField extends FormField<String>
   CustomTextFormField({
     Key? key,
     this.registryId,
+    this.lookupPriority,
 
     // some code ...
 
-  })
+  });
 
   // some code ...
 
   @override
   final String? registryId;
+
+  @override
+  final int? lookupPriority;
 }
 ```
 
@@ -125,7 +132,9 @@ class _TextFormFieldState extends FormFieldState<String>
 
 With the second one, you need to:
 
-* Wrap the widget that contains the form field by `FormFieldRegistrant` and pass down values to these parameters: `registryId`, `validator`, and `builder`. The `builder` function takes `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments which you have to pass to the widget that is a form field.
+* Wrap the widget that contains the form field by `FormFieldRegistrant`.
+* There are some mandatory parameters: `registryId`, `validator`, and `builder`.
+* The `builder` function should accept `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments, and these parameters need to be passed to the widget that represents the form field.
 
 An example with package [`date_field`](https://pub.dev/packages/date_field).
 
@@ -166,4 +175,4 @@ If your actual form field has `restorationId`, you should be passing it to the `
 
 You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
 
-In case, you have an existing form field key that cannot be removed because you (still) need to access its form field state, ..., pass that key to the `formFieldKey` parameter. 
+`FormFieldRegistrant` has a parameter named `formFieldKey`, give it your own key if you need to access the form field state.
