@@ -77,8 +77,6 @@ With the first one, you should:
 
 * Use the mixin `FormFieldRegistrantMixin` in the class that extends `FormField`.
 * Override `registryId` and `lookupPriority`.
-* This `registryId` is used to identify between other `FormField`s. It is nullable, so you only need to pass the value only when you need to validate.
-* When the visibility of a `FormField` changes (e.g. from being invisible to visible using the `Visibility` widget), or when it is reinserted into the widget tree (activate) after having been removed (deactivate), it will be registered as the last one in the set. Consequently, when looking for the first invalid field, this `FormField` will not be retrieved, but another one will be. If you consider this as an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
 
 ```dart
 class CustomTextFormField extends FormField<String>
@@ -131,6 +129,17 @@ class _TextFormFieldState extends FormFieldState<String>
   // some code ...
 }
 ```
+
+* The `registryId` is used to identify between other `FormField`s. It is nullable, and should only be assigned a value when you need to validate the specific field.
+
+```dart
+final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
+final RegisteredField registeredField = formRegistryWidgetState.getFieldBy('your field registry id');
+final result = registeredField.validate();
+```
+
+* When the visibility of a `FormField` changes (e.g. from being invisible to visible using the `Visibility` widget), or when it is reinserted into the widget tree (activate) after having been removed (deactivate), it will be registered as the last one in the set. Consequently, when looking for the first invalid field, this `FormField` will not be retrieved, but another one will be. If you consider this as an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
+
 
 With the second one, you need to:
 
