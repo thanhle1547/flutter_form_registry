@@ -395,7 +395,7 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 
   void _unregister(RegisteredField? field) {
     _registeredFields.remove(field);
-    _noPriority.remove(field?.id);
+    _noPriority.remove(field?.id.hashCode);
   }
 
   @override
