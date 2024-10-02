@@ -40,9 +40,9 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 
 ## 📦 Dependency
 
-* flutter sdk >=3.0.0
+* flutter sdk >=3.7.0
 
-* dart sdk >=2.17.0 <3.0.0
+* dart sdk >=2.19.0 <3.0.0
 
 For the older flutter sdk:
 

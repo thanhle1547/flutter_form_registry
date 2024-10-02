@@ -172,7 +172,7 @@ class RegisteredField {
     assert(!excludeLeading.isNegative && !excludeTrailing.isNegative);
 
     final RenderBox? box = context.findRenderObject() as RenderBox?;
-    final viewport = RenderAbstractViewport.of(box);
+    final viewport = RenderAbstractViewport.maybeOf(box);
 
     if (viewport == null || box == null) {
       return false;
@@ -183,7 +183,7 @@ class RegisteredField {
 
     final double itemOffset;
 
-    final ScrollableState? scrollable = Scrollable.of(context);
+    final ScrollableState? scrollable = Scrollable.maybeOf(context);
     assert(scrollable != null);
 
     if (viewport is RenderViewport) {
