@@ -1,3 +1,12 @@
+## 0.6.3
+
+* Fix the form field registrant did not fully unregister.
+* Change the return type of `FormRegistryWidgetState.registeredFields` and `FormRegistryWidgetState.invalidFields` to `UnmodifiableListView`.
+* Add link to repository in pubspec.
+* Update docs.
+* Update README.
+
+
 ## 0.6.2
 
 * No code changes.
