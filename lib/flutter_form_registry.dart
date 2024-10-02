@@ -60,6 +60,8 @@ class RegisteredField {
   /// The key of the form field
   Key? get key => _key;
 
+  /// It's registrarId in [FormFieldRegistrantMixin.registrarId]
+  /// and [FormFieldRegistrant.registrarId]
   final String? id;
 
   int _priority;
@@ -425,12 +427,14 @@ mixin FormFieldRegistrantMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
   String? get registrarId;
 
-  /// When [FormField] visibility changes (e.g. from invisible to visible by
-  /// using the [Visibility] widget), or after a new one is inserted,
-  /// it will be registered as the last one in the set. So when lookup for
-  /// the first invalid field, you got another which might be this one.
-  /// If you consider this an issue, all you need to do is to set the priority
-  /// to arrange this [FormField].
+  /// When the visibility of a `FormField` changes (e.g. from being invisible
+  /// to visible using the [Visibility] widget), or when it is reinserted into
+  /// the widget tree (activate) after having been removed (deactivate),
+  /// it will be registered as the last one in the set. Consequently,
+  /// when looking for the first invalid field, this `FormField`
+  /// will not be retrieved, but another one will be.
+  /// If you consider this as an issue, all you need to do is to set
+  /// the priority to arrange this [FormField].
   ///
   /// Default to `-1` if `null`.
   ///
@@ -590,12 +594,14 @@ class FormFieldRegistrant<T> extends StatefulWidget {
   /// The identifier between other [FormField]s.
   final String registrarId;
 
-  /// When [FormField] visibility changes (e.g. from invisible to visible by
-  /// using the [Visibility] widget), or after a new one is inserted,
-  /// it will be registered as the last one in the set. So when lookup for
-  /// the first invalid field, you got another which might be this one.
-  /// If you consider this an issue, all you need to do is to set the priority
-  /// to arrange this [FormField].
+  /// When the visibility of a `FormField` changes (e.g. from being invisible
+  /// to visible using the [Visibility] widget), or when it is reinserted into
+  /// the widget tree (activate) after having been removed (deactivate),
+  /// it will be registered as the last one in the set. Consequently,
+  /// when looking for the first invalid field, this `FormField`
+  /// will not be retrieved, but another one will be.
+  /// If you consider this as an issue, all you need to do is to set
+  /// the priority to arrange this [FormField].
   ///
   /// Default to `-1` if `null`.
   ///
