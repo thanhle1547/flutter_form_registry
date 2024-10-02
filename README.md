@@ -46,6 +46,8 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 
 For the older flutter sdk:
 
+* [>=3.0.0 <3.7.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.7.0_above_%3D_3.3.0)
+
 * [>=2.5.0 <3.0.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.3.0_above_%3D_2.5.0)
 
 * [<2.5.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_2.5.0)
