@@ -57,7 +57,7 @@ abstract class _ScrollConfiguration {
 /// [RegisteredField._priority].
 const int _kLookupPriority = -1;
 
-class RegisteredField {
+class RegisteredField<T> {
   Key? _key;
   /// The key of the form field
   Key? get key => _key;
@@ -74,6 +74,12 @@ class RegisteredField {
   BuildContext get context => _context;
 
   final _ScrollConfiguration _scrollConfiguration;
+
+  /// The current value of the form field.
+  final T? Function() getValue;
+
+  /// The type of the value.
+  Type get valueType => T;
 
   /// True if the current value is valid.
   ///
@@ -100,6 +106,7 @@ class RegisteredField {
     int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
+    required this.getValue,
     required this.isValid,
     required this.validate,
   })  : _key = key,
@@ -491,12 +498,13 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 
       final formMixin = widget as FormFieldRegistrantMixin;
 
-      _registeredField = RegisteredField._(
+      _registeredField = RegisteredField<T>._(
         key: widget.key,
         id: formMixin.registrarId,
         priority: formMixin.lookupPriority,
         context: context,
         scrollConfiguration: this,
+        getValue: () => value,
         isValid: () => isValid,
         validate: validate,
       );
@@ -747,12 +755,13 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     // _key.currentContext might be equal `null`
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (_registryWidgetState != null && _registeredField == null) {
-        _registeredField = RegisteredField._(
+        _registeredField = RegisteredField<T>._(
           key: _key,
           id: widget.registrarId,
           priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: this,
+          getValue: () => _key.currentState!.value,
           isValid: () => _key.currentState!.isValid,
           validate: _key.currentState!.validate,
         );
