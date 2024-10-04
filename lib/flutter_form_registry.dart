@@ -70,7 +70,8 @@ class RegisteredField<T> {
 
   // ignore: prefer_final_fields
   BuildContext _context;
-  /// The context of the form field
+
+  /// The context of the form field.
   BuildContext get context => _context;
 
   final _ScrollConfiguration _scrollConfiguration;
@@ -454,6 +455,10 @@ mixin FormFieldRegistrantMixin<T> on FormField<T> {
   int? get lookupPriority;
 }
 
+/// A mixin to auto-register a [RegisteredField] to the [FormRegistryWidget].
+///
+/// This mixin only registers [RegisteredField] if the
+/// [FormRegistryWidget.maybeOf] return [FormRegistryWidgetState].
 mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
     implements _ScrollConfiguration {
   late FormRegistryWidgetState? _registryWidgetState;
