@@ -93,6 +93,7 @@ class CustomTextFormField extends FormField<String>
   CustomTextFormField({
     Key? key,
     this.registrarId,
+    this.registrarType,
     this.lookupPriority,
     this.controller,
     String? initialValue,
@@ -261,6 +262,9 @@ class CustomTextFormField extends FormField<String>
 
   @override
   final String? registrarId;
+
+  @override
+  final Object? registrarType;
 
   @override
   final int? lookupPriority;

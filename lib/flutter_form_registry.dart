@@ -66,6 +66,12 @@ class RegisteredField<T> {
   /// and [FormFieldRegistrant.registrarId]
   final String? id;
 
+  /// It's registrarType in [FormFieldRegistrantMixin.registrarType]
+  /// and [FormFieldRegistrant.registrarType]
+  ///
+  /// Can be used to filter the form fields.
+  final Object? type;
+
   int _priority;
 
   // ignore: prefer_final_fields
@@ -104,6 +110,7 @@ class RegisteredField<T> {
   RegisteredField._({
     Key? key,
     this.id,
+    this.type,
     int? priority,
     required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
@@ -437,6 +444,10 @@ mixin FormFieldRegistrantMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
   String? get registrarId;
 
+  /// Can be used to filter the form fields in
+  /// [FormRegistryWidgetState.registeredFields].
+  Object? get registrarType;
+
   /// When the visibility of a `FormField` changes (e.g. from being invisible
   /// to visible using the [Visibility] widget), or when it is reinserted into
   /// the widget tree (activate) after having been removed (deactivate),
@@ -506,6 +517,7 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
       _registeredField = RegisteredField<T>._(
         key: widget.key,
         id: formMixin.registrarId,
+        type: formMixin.registrarType,
         priority: formMixin.lookupPriority,
         context: context,
         scrollConfiguration: this,
@@ -594,6 +606,7 @@ class FormFieldRegistrant<T> extends StatefulWidget {
   const FormFieldRegistrant({
     Key? key,
     required this.registrarId,
+    this.registrarType,
     this.lookupPriority,
     this.formFieldKey,
     this.restorationId,
@@ -608,6 +621,10 @@ class FormFieldRegistrant<T> extends StatefulWidget {
 
   /// The identifier between other [FormField]s.
   final String registrarId;
+
+  /// Can be used to filter the form fields in
+  /// [FormRegistryWidgetState.registeredFields].
+  final Object? registrarType;
 
   /// When the visibility of a `FormField` changes (e.g. from being invisible
   /// to visible using the [Visibility] widget), or when it is reinserted into
@@ -763,6 +780,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
         _registeredField = RegisteredField<T>._(
           key: _key,
           id: widget.registrarId,
+          type: widget.registrarType,
           priority: widget.lookupPriority,
           context: _key.currentContext!,
           scrollConfiguration: this,
