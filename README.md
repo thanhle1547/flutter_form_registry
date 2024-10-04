@@ -36,7 +36,7 @@ In while, maybe this workaround will help you. Beside [flutter_form_builder](htt
 
 * Can auto-scroll to the first Form's invalid field.
 
-* Each registered FormField widget contains its key, error text and method to scroll its into view and check is it fully visible.
+* Each registered FormField widget contains its key, value, error text, and helper methods for scrolling to reveal and checking if it is fully visible.
 
 ## 📦 Dependency
 
@@ -76,7 +76,7 @@ These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `default
 With the first one, you should:
 
 * Use the mixin `FormFieldRegistrantMixin` in the class that extends `FormField`.
-* Override `registryId` and `lookupPriority`.
+* Override `registryId`, `registryType` and `lookupPriority`.
 
 ```dart
 class CustomTextFormField extends FormField<String>
@@ -84,6 +84,7 @@ class CustomTextFormField extends FormField<String>
   CustomTextFormField({
     Key? key,
     this.registryId,
+    this.registryType,
     this.lookupPriority,
 
     // some code ...
@@ -94,6 +95,9 @@ class CustomTextFormField extends FormField<String>
 
   @override
   final String? registryId;
+
+  @override
+  final Object? registryType;
 
   @override
   final int? lookupPriority;
@@ -138,6 +142,18 @@ final RegisteredField registeredField = formRegistryWidgetState.getFieldBy('your
 final result = registeredField.validate();
 ```
 
+* The `registrarType` can be used to filter form fields.
+
+```dart
+final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
+final UnmodifiableListView<RegisteredField> registeredFields = formRegistryWidgetState.registeredFields;
+for (final field in registeredFields) {
+  if (field.type == 'date') {
+    // do something...
+  }
+}
+```
+
 * When the visibility of a `FormField` changes (e.g. from being invisible to visible using the `Visibility` widget), or when it is reinserted into the widget tree (activate) after having been removed (deactivate), it will be registered as the last one in the set. Consequently, when looking for the first invalid field, this `FormField` will not be retrieved, but another one will be. If you consider this as an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
 
 
@@ -152,6 +168,7 @@ An example with package [`date_field`](https://pub.dev/packages/date_field).
 ```dart
 FormFieldRegistrant(
   registryId: 'select date',
+  registryType: 'date',
   validator: (DateTime? value) {
     if (value == null) {
       return "Empty!";
@@ -182,8 +199,18 @@ FormFieldRegistrant(
 ),
 ```
 
-If your actual form field has `restorationId`, you should be passing it to the `FormFieldRegistrant` as well.
+If your form field has `restorationId`, you should be passing it to the `FormFieldRegistrant` as well.
 
-You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
+<hr>
 
-`FormFieldRegistrant` has a parameter named `formFieldKey`, give it your own key if you need to access the form field state.
+* You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
+
+* `FormFieldRegistrant` has a parameter named `formFieldKey`, give it your own key if you need to access the form field state.
+
+* To get the current value of form field without creating a `GlobalKey<FormFieldState<T>>`, `TextEditingController`, ...
+
+```dart
+final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
+final RegisteredField registeredField = formRegistryWidgetState.getFieldBy('your field registry id');
+final currentValue = registeredField.getValue();
+```
