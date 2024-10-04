@@ -1,3 +1,12 @@
+## 0.7.0
+
+* **Add** `RegisteredField.getValue()` methods.
+* **Add** `RegisteredField.valueType` getter.
+* **Add** `RegisteredField.type`, `FormFieldRegistrantMixin.registrarType` and `FormFieldRegistrant.registrarType`.
+* Update docs.
+* Update README.
+
+
 ## 0.6.5
 
 * No code changes.
