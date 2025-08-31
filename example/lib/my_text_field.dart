@@ -5,11 +5,10 @@ import 'package:flutter/material.dart';
 /// from issue [#67283](https://github.com/flutter/flutter/issues/67283).
 class MyTextField extends StatelessWidget {
   const MyTextField({
-    Key? key,
     required this.initial,
     required this.fieldKey,
     this.validator,
-  }) : super(key: key);
+  });
 
   final String initial;
   final GlobalKey fieldKey;

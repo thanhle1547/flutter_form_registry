@@ -1,5 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison, curly_braces_in_flow_control_structures
 
+import 'dart:ui' as ui;
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_registry/flutter_form_registry.dart';
@@ -91,7 +94,7 @@ class CustomTextFormField extends FormField<String>
   /// For documentation about the various parameters, see the [TextField] class
   /// and [TextField.new], the constructor.
   CustomTextFormField({
-    Key? key,
+    super.key,
     this.registrarId,
     this.registrarType,
     this.lookupPriority,
@@ -121,18 +124,21 @@ class CustomTextFormField extends FormField<String>
     int? minLines,
     bool expands = false,
     int? maxLength,
-    ValueChanged<String>? onChanged,
+    this.onChanged,
     GestureTapCallback? onTap,
+    bool onTapAlwaysCalled = false,
+    TapRegionCallback? onTapOutside,
     VoidCallback? onEditingComplete,
     ValueChanged<String>? onFieldSubmitted,
-    FormFieldSetter<String>? onSaved,
-    FormFieldValidator<String>? validator,
+    super.onSaved,
+    super.validator,
     List<TextInputFormatter>? inputFormatters,
     bool? enabled,
     double cursorWidth = 2.0,
     double? cursorHeight,
     Radius? cursorRadius,
     Color? cursorColor,
+    Color? cursorErrorColor,
     Brightness? keyboardAppearance,
     EdgeInsets scrollPadding = const EdgeInsets.all(20.0),
     bool? enableInteractiveSelection,
@@ -142,64 +148,56 @@ class CustomTextFormField extends FormField<String>
     Iterable<String>? autofillHints,
     AutovalidateMode? autovalidateMode,
     ScrollController? scrollController,
-    String? restorationId,
+    super.restorationId,
     bool enableIMEPersonalizedLearning = true,
     MouseCursor? mouseCursor,
+    EditableTextContextMenuBuilder? contextMenuBuilder = _defaultContextMenuBuilder,
+    SpellCheckConfiguration? spellCheckConfiguration,
+    TextMagnifierConfiguration? magnifierConfiguration,
+    UndoHistoryController? undoController,
+    AppPrivateCommandCallback? onAppPrivateCommand,
+    bool? cursorOpacityAnimates,
+    ui.BoxHeightStyle selectionHeightStyle = ui.BoxHeightStyle.tight,
+    ui.BoxWidthStyle selectionWidthStyle = ui.BoxWidthStyle.tight,
+    DragStartBehavior dragStartBehavior = DragStartBehavior.start,
+    ContentInsertionConfiguration? contentInsertionConfiguration,
+    MaterialStatesController? statesController,
+    Clip clipBehavior = Clip.hardEdge,
+    bool scribbleEnabled = true,
+    bool canRequestFocus = true,
   })  : assert(initialValue == null || controller == null),
-        assert(textAlign != null),
-        assert(autofocus != null),
-        assert(readOnly != null),
-        assert(obscuringCharacter != null && obscuringCharacter.length == 1),
-        assert(obscureText != null),
-        assert(autocorrect != null),
-        assert(enableSuggestions != null),
-        assert(scrollPadding != null),
+        assert(obscuringCharacter.length == 1),
         assert(maxLines == null || maxLines > 0),
         assert(minLines == null || minLines > 0),
         assert(
           (maxLines == null) || (minLines == null) || (maxLines >= minLines),
           "minLines can't be greater than maxLines",
         ),
-        assert(expands != null),
         assert(
           !expands || (maxLines == null && minLines == null),
           'minLines and maxLines must be null when expands is true.',
         ),
-        assert(!obscureText || maxLines == 1,
-            'Obscured fields cannot be multiline.'),
-        assert(maxLength == null ||
-            maxLength == TextField.noMaxLength ||
-            maxLength > 0),
-        assert(enableIMEPersonalizedLearning != null),
+        assert(!obscureText || maxLines == 1, 'Obscured fields cannot be multiline.'),
+        assert(maxLength == null || maxLength == TextField.noMaxLength || maxLength > 0),
         super(
-          key: key,
-          restorationId: restorationId,
-          initialValue:
-              controller != null ? controller.text : (initialValue ?? ''),
-          onSaved: onSaved,
-          validator: validator,
+          initialValue: controller != null ? controller.text : (initialValue ?? ''),
           enabled: enabled ?? decoration?.enabled ?? true,
           autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
           builder: (FormFieldState<String> field) {
             final _TextFormFieldState state = field as _TextFormFieldState;
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
+            final InputDecoration effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             void onChangedHandler(String value) {
               field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
+              onChanged?.call(value);
             }
-
             return UnmanagedRestorationScope(
               bucket: field.bucket,
               child: TextField(
                 restorationId: restorationId,
                 controller: state._effectiveController,
                 focusNode: focusNode,
-                decoration:
-                    effectiveDecoration.copyWith(errorText: field.errorText),
+                decoration: effectiveDecoration.copyWith(errorText: field.errorText),
                 keyboardType: keyboardType,
                 textInputAction: textInputAction,
                 style: style,
@@ -209,6 +207,7 @@ class CustomTextFormField extends FormField<String>
                 textDirection: textDirection,
                 textCapitalization: textCapitalization,
                 autofocus: autofocus,
+                statesController: statesController,
                 readOnly: readOnly,
                 showCursor: showCursor,
                 obscuringCharacter: obscuringCharacter,
@@ -230,6 +229,8 @@ class CustomTextFormField extends FormField<String>
                 maxLength: maxLength,
                 onChanged: onChangedHandler,
                 onTap: onTap,
+                onTapAlwaysCalled: onTapAlwaysCalled,
+                onTapOutside: onTapOutside,
                 onEditingComplete: onEditingComplete,
                 onSubmitted: onFieldSubmitted,
                 inputFormatters: inputFormatters,
@@ -249,6 +250,19 @@ class CustomTextFormField extends FormField<String>
                 scrollController: scrollController,
                 enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
                 mouseCursor: mouseCursor,
+                contextMenuBuilder: contextMenuBuilder,
+                spellCheckConfiguration: spellCheckConfiguration,
+                magnifierConfiguration: magnifierConfiguration,
+                undoController: undoController,
+                onAppPrivateCommand: onAppPrivateCommand,
+                cursorOpacityAnimates: cursorOpacityAnimates,
+                selectionHeightStyle: selectionHeightStyle,
+                selectionWidthStyle: selectionWidthStyle,
+                dragStartBehavior: dragStartBehavior,
+                contentInsertionConfiguration: contentInsertionConfiguration,
+                clipBehavior: clipBehavior,
+                scribbleEnabled: scribbleEnabled,
+                canRequestFocus: canRequestFocus,
               ),
             );
           },
@@ -260,6 +274,9 @@ class CustomTextFormField extends FormField<String>
   /// initialize its [TextEditingController.text] with [initialValue].
   final TextEditingController? controller;
 
+  /// {@macro flutter.material.TextFormField.onChanged}
+  final ValueChanged<String>? onChanged;
+
   @override
   final String? registrarId;
 
@@ -268,6 +285,12 @@ class CustomTextFormField extends FormField<String>
 
   @override
   final int? lookupPriority;
+
+  static Widget _defaultContextMenuBuilder(BuildContext context, EditableTextState editableTextState) {
+    return AdaptiveTextSelectionToolbar.editableText(
+      editableTextState: editableTextState,
+    );
+  }
 
   @override
   FormFieldState<String> createState() => _TextFormFieldState();
@@ -359,10 +382,11 @@ class _TextFormFieldState extends FormFieldState<String>
 
   @override
   void reset() {
-    // setState will be called in the superclass, so even though state is being
-    // manipulated, no setState call is needed here.
+    // Set the controller value before calling super.reset() to let
+    // _handleControllerChanged suppress the change.
     _effectiveController.text = widget.initialValue ?? '';
     super.reset();
+    _textFormField.onChanged?.call(_effectiveController.text);
   }
 
   void _handleControllerChanged() {
@@ -373,7 +397,8 @@ class _TextFormFieldState extends FormFieldState<String>
     // notifications for changes originating from within this class -- for
     // example, the reset() method. In such cases, the FormField value will
     // already have been set.
-    if (_effectiveController.text != value)
+    if (_effectiveController.text != value) {
       didChange(_effectiveController.text);
+    }
   }
 }
