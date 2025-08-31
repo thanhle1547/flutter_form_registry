@@ -1,5 +1,3 @@
-library flutter_form_registry;
-
 import 'dart:collection';
 
 import 'package:flutter/rendering.dart';
