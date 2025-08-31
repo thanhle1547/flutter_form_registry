@@ -74,29 +74,13 @@ class RegisteredField<T> {
 
   int _priority;
 
-  // ignore: prefer_final_fields
-  BuildContext _context;
-
-  /// The context of the form field.
-  BuildContext get context => _context;
-
   final _ScrollConfiguration _scrollConfiguration;
 
-  /// The current value of the form field.
-  final T? Function() getValue;
+  /// The state of the form field
+  final FormFieldState<T> formFieldState;
 
   /// The type of the value.
   Type get valueType => T;
-
-  /// True if the current value is valid.
-  ///
-  /// This will not set [errorText] or [hasError] and it will not update
-  /// error display.
-  ///
-  /// See also:
-  ///
-  ///  * [validate], which may update [errorText] and [hasError].
-  final bool Function() isValid;
 
   /// Calls [FormField.validator] to set the [errorText]. Returns true if there
   /// were no errors.
@@ -112,24 +96,12 @@ class RegisteredField<T> {
     this.id,
     this.type,
     int? priority,
-    required BuildContext context,
     required _ScrollConfiguration scrollConfiguration,
-    required this.getValue,
-    required this.isValid,
+    required this.formFieldState,
     required this.validate,
   })  : _key = key,
         _priority = priority ?? _kLookupPriority,
-        _context = context,
         _scrollConfiguration = scrollConfiguration;
-
-  String? _errorText;
-  /// The current validation error returned by the [FormField.validator]
-  /// callback, or null if no errors have been triggered. This only updates when
-  /// [validate] is called.
-  String? get errorText => _errorText;
-
-  /// True if this field has any validation errors.
-  bool get hasError => _errorText != null;
 
   /// Animates the position such that the given object is as visible as possible
   /// by just scrolling this position.
@@ -149,7 +121,7 @@ class RegisteredField<T> {
       delay ?? _scrollConfiguration.scrollDelay ?? Duration.zero,
       () {
         Scrollable.ensureVisible(
-          context,
+          formFieldState.context,
           alignment: alignment ?? _scrollConfiguration.alignment,
           duration: duration ?? _scrollConfiguration.duration,
           curve: curve ?? _scrollConfiguration.curve,
@@ -185,6 +157,8 @@ class RegisteredField<T> {
     double excludeTrailing = 0.0,
   }) {
     assert(!excludeLeading.isNegative && !excludeTrailing.isNegative);
+
+    final context = formFieldState.context;
 
     final RenderBox? box = context.findRenderObject() as RenderBox?;
     final viewport = RenderAbstractViewport.maybeOf(box);
@@ -358,7 +332,7 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 
   RegisteredField? get firstInvalid {
     for (final RegisteredField field in _registeredFields) {
-      if (field.hasError) return field;
+      if (field.formFieldState.hasError) return field;
     }
 
     return null;
@@ -366,7 +340,7 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
 
   UnmodifiableListView<RegisteredField> get invalidFields => _registeredFields.isEmpty
       ? UnmodifiableListView(const <RegisteredField>[])
-      : UnmodifiableListView(_registeredFields.where((e) => e.hasError));
+      : UnmodifiableListView(_registeredFields.where((e) => e.formFieldState.hasError));
 
   RegisteredField? getFieldBy(String registrarId) =>
       _noPriority[registrarId.hashCode];
@@ -519,29 +493,18 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
         id: formMixin.registrarId,
         type: formMixin.registrarType,
         priority: formMixin.lookupPriority,
-        context: context,
         scrollConfiguration: this,
-        getValue: () => value,
-        isValid: () => isValid,
+        formFieldState: this,
         validate: validate,
       );
 
       _registryWidgetState!._register(_registeredField!);
     }
-
-    _registeredField?._context = context;
-  }
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    super.restoreState(oldBucket, initialRestore);
-    _registeredField?._errorText = errorText;
   }
 
   @override
   void activate() {
     super.activate();
-    _registeredField?._context = context;
     _registryWidgetState?._register(_registeredField!);
   }
 
@@ -549,12 +512,6 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
   void deactivate() {
     super.deactivate();
     _registryWidgetState?._unregister(_registeredField);
-  }
-
-  @override
-  void didToggleBucket(RestorationBucket? oldBucket) {
-    super.didToggleBucket(oldBucket);
-    _registeredField?._errorText = errorText;
   }
 
   @override
@@ -567,8 +524,6 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
   @override
   bool validate() {
     final bool result = super.validate();
-
-    _registeredField?._errorText = errorText;
 
     if (!result &&
         _autoScrollToFirstError &&
@@ -586,15 +541,6 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 
     return result;
   }
-
-  @override
-  Widget build(BuildContext context) {
-    final result = super.build(context);
-
-    _registeredField?._errorText = errorText;
-
-    return result;
-  }
 }
 
 /// To track the [FormField] widget whose state will be updated at its
@@ -609,7 +555,6 @@ class FormFieldRegistrant<T> extends StatefulWidget {
     this.registrarType,
     this.lookupPriority,
     this.formFieldKey,
-    this.restorationId,
     required this.validator,
     required this.builder,
     this.scrollDelay,
@@ -648,20 +593,6 @@ class FormFieldRegistrant<T> extends StatefulWidget {
   /// A new `GlobalKey<FormFieldState<T>>`will be created if [formFieldKey]
   /// changed to `null`.
   final GlobalKey<FormFieldState<T>>? formFieldKey;
-
-  /// Restoration ID to save and restore the state of the form field.
-  ///
-  /// Setting the restoration ID to a non-null value results in whether or not
-  /// the form field validation persists.
-  ///
-  /// The state of this widget is persisted in a [RestorationBucket] claimed
-  /// from the surrounding [RestorationScope] using the provided restoration ID.
-  ///
-  /// See also:
-  ///
-  ///  * [RestorationManager], which explains how state restoration works in
-  ///    Flutter.
-  final String? restorationId;
 
   /// An optional method that validates an input. Returns an error string to
   /// display if the input is invalid, or null otherwise.
@@ -710,7 +641,7 @@ class FormFieldRegistrant<T> extends StatefulWidget {
 
 /// State associated with a [FormFieldRegistrant] widget.
 class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
-    with _ScrollConfiguration, RestorationMixin {
+    with _ScrollConfiguration {
   late GlobalKey<FormFieldState<T>> _key =
       widget.formFieldKey ?? GlobalKey<FormFieldState<T>>();
 
@@ -762,8 +693,6 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
         _registryWidgetState?._unregister(_registeredField);
       } else {
         _registryWidgetState?._register(_registeredField!);
-        _registeredField?._context = _key.currentContext!;
-        _registeredField?._errorText = _key.currentState?.errorText;
       }
     });
 
@@ -774,7 +703,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _registryWidgetState = FormRegistryWidget.maybeOf(context);
-    // _key.currentContext might be equal `null`
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (_registryWidgetState != null && _registeredField == null) {
         _registeredField = RegisteredField<T>._(
@@ -782,10 +711,8 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
           id: widget.registrarId,
           type: widget.registrarType,
           priority: widget.lookupPriority,
-          context: _key.currentContext!,
           scrollConfiguration: this,
-          getValue: () => _key.currentState!.value,
-          isValid: () => _key.currentState!.isValid,
+          formFieldState: _key.currentState!,
           validate: _key.currentState!.validate,
         );
 
@@ -795,17 +722,8 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   }
 
   @override
-  String? get restorationId => widget.restorationId;
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    _registeredField?._errorText = _key.currentState!.errorText;
-  }
-
-  @override
   void activate() {
     super.activate();
-    _registeredField?._context = _key.currentContext!;
     _registryWidgetState?._register(_registeredField!);
   }
 
@@ -813,12 +731,6 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   void deactivate() {
     super.deactivate();
     _registryWidgetState?._unregister(_registeredField);
-  }
-
-  @override
-  void didToggleBucket(RestorationBucket? oldBucket) {
-    super.didToggleBucket(oldBucket);
-    _registeredField?._errorText = _key.currentState!.errorText;
   }
 
   @override
@@ -834,7 +746,6 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _registeredField?._key = _key;
-        _registeredField?._context = _key.currentContext!;
       });
     } else {
       assert(
@@ -854,8 +765,6 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
 
   String? _validator(T? value) {
     final String? result = widget.validator(value);
-
-    _registeredField?._errorText = result;
 
     if (result != null &&
         _autoScrollToFirstError &&

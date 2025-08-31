@@ -190,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           final firstInvalidField = _registerdKey.currentState?.firstInvalid;
 
-          print(firstInvalidField?.errorText);
+          print(firstInvalidField?.formFieldState.errorText);
 
           firstInvalidField?.scrollToIntoView();
         },
