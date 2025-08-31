@@ -140,15 +140,17 @@ class RegisteredField<T> {
   /// (It does not take widget opacity into account)
   ///
   /// e.g. When property [Scaffold.extendBodyBehindAppBar] is set to true which
-  /// the height of the [body] is extended to include the height of the app bar.
-  /// The [excludeLeading] will be equal to the app bar height.
+  /// the height of the [Scaffold.body] is extended to include the height
+  /// of the app bar. The [excludeLeading] will be equal to the app bar height.
   ///
   /// e.g. When property [Scaffold.extendBody] is set to true, and
-  /// [bottomNavigationBar] or [persistentFooterButtons] is specified,
-  /// then the [body] extends to the bottom of the Scaffold,
-  /// instead of only extending to the top of the [bottomNavigationBar]
-  /// or the [persistentFooterButtons]. The [excludeTrailing] will be equal to
-  /// [bottomNavigationBar] or [persistentFooterButtons] height.
+  /// [Scaffold.bottomNavigationBar] or [Scaffold.persistentFooterButtons]
+  /// is specified, then the [Scaffold.body] extends to the bottom of
+  /// the Scaffold, instead of only extending to the top of
+  /// the [Scaffold.bottomNavigationBar] or
+  /// the [Scaffold.persistentFooterButtons].
+  /// The [excludeTrailing] will be equal to [Scaffold.bottomNavigationBar]
+  /// or [persistentFooterButtons] height.
   ///
   /// **Note:** A long widget (e.g. multiline [TextFormField]) might not be
   /// fully visible.
