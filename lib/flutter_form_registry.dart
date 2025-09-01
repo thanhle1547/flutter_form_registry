@@ -80,13 +80,13 @@ class RegisteredField<T> {
   /// The type of the value.
   Type get valueType => T;
 
-  /// Calls [FormField.validator] to set the [errorText]. Returns true if there
-  /// were no errors.
+  /// Calls [FormField.validator] to set the [FormFieldState.errorText].
+  /// Returns true if there were no errors.
   ///
   /// See also:
   ///
-  ///  * [isValid], which passively gets the validity without setting
-  ///    [errorText] or [hasError].
+  ///  * [FormFieldState.isValid], which passively gets the validity
+  ///    without setting [FormFieldState.errorText] or [FormFieldState.hasError].
   final bool Function() validate;
 
   RegisteredField._({
@@ -106,7 +106,7 @@ class RegisteredField<T> {
   ///
   /// See also:
   ///
-  ///  * [ScrollPositionAlignmentPolicy] for the way in which `alignment` is
+  ///  * [ScrollPositionAlignmentPolicy] for the way in which [alignment] is
   ///    applied, and the way the given `object` is aligned.
   void scrollToIntoView({
     Duration? delay,
@@ -148,7 +148,7 @@ class RegisteredField<T> {
   /// the [Scaffold.bottomNavigationBar] or
   /// the [Scaffold.persistentFooterButtons].
   /// The [excludeTrailing] will be equal to [Scaffold.bottomNavigationBar]
-  /// or [persistentFooterButtons] height.
+  /// or [Scaffold.persistentFooterButtons] height.
   ///
   /// **Note:** A long widget (e.g. multiline [TextFormField]) might not be
   /// fully visible.
