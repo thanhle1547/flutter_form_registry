@@ -48,14 +48,6 @@ A workaround to track some `FormField`s in the tree. Support checking `FormField
 
 * Dart SDK `>=2.19.0 <3.0.0`
 
-For the older Flutter SDK:
-
-* [`>=3.0.0 <3.7.0`](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.7.0_above_%3D_3.3.0)
-
-* [`>=2.5.0 <3.0.0`](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.3.0_above_%3D_2.5.0)
-
-* [`<2.5.0`](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_2.5.0)
-
 ## 💽 Installation
 
 ```yaml
