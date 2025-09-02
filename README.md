@@ -1,4 +1,4 @@
-## flutter_form_registry
+# flutter_form_registry
 
 [![Pub Version](https://img.shields.io/pub/v/flutter_form_registry.svg)](https://pub.dev/packages/flutter_form_registry)
 ![Pub Points](https://img.shields.io/pub/points/flutter_form_registry.svg)
@@ -22,39 +22,43 @@ A workaround to track some `FormField`s in the tree. Support checking `FormField
 
 -----
 
-Do you want functionality like scrolling to the first invalid form?
+## Are you looking for a way to...
 
-You don't want to maintain a list of keys for your form fields by yourself?
+* Scroll to the first invalid form field after `FormState.validate()` is called, without having to manually maintain a list of keys for your form fields?
 
-Because we cannot access registered `FormFieldState` in the Form widget by the `GlobalKey<FormState>` to determine which `FormFieldState` has validated error. So... To make fields property of `FieldState` publicity, please give a 👍 to the issue [#67283](https://github.com/flutter/flutter/issues/67283).
+* Get the validity of all form fields without having to call `FormState.validate()`?
 
-In while, maybe this workaround will help you. Beside [flutter_form_builder](https://pub.dev/packages/flutter_form_builder), [ready_form](https://pub.dev/packages/ready_form).
+* Get dynamic `FormFieldState` instances created from the API without manually managing a `GlobalKey` for each one?
 
-## 🔍 Features
+## 🔍 Core Features
 
-* Tracking registered widget.
+* Tracking all registered FormFieldStates via the `FormRegistryWidget`.
 
-* Can auto-scroll to the first Form's invalid field.
+* Auto-scroll to the first invalid field when validating.
 
-* Each registered FormField widget contains its key, value, error text, and helper methods for scrolling to reveal and checking if it is fully visible.
+* Each registered `FormField` widget exposes:
+  * `FormFieldState` instance to get its `value`, `errorText`, etc.
+  * `FormField.validator` method.
+  * Helper method to scroll the registered form field widget into view.
+  * Helper method to check if the registered field is fully visible.
 
-## 📦 Dependency
+## 📦 Requirements
 
-* flutter sdk >=3.7.0
+* Flutter SDK `>=3.7.0`
 
-* dart sdk >=2.19.0 <3.0.0
+* Dart SDK `>=2.19.0 <3.0.0`
 
-For the older flutter sdk:
+For the older Flutter SDK:
 
-* [>=3.0.0 <3.7.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.7.0_above_%3D_3.3.0)
+* [`>=3.0.0 <3.7.0`](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.7.0_above_%3D_3.3.0)
 
-* [>=2.5.0 <3.0.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.3.0_above_%3D_2.5.0)
+* [`>=2.5.0 <3.0.0`](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_3.3.0_above_%3D_2.5.0)
 
-* [<2.5.0](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_2.5.0)
+* [`<2.5.0`](https://github.com/thanhle1547/flutter_form_registry/tree/flutter_below_2.5.0)
 
 ## 💽 Installation
 
-```
+```yaml
 dependencies:
 
   flutter_form_registry: ^0.7.0
@@ -62,21 +66,52 @@ dependencies:
 
 ## 📺 Usage
 
-1. Wrap the widget that contains all the form fields by `FormRegistryWidget`.
+### 1. Setting up the Registry
 
-To access all the registered form fields, give the `FormRegistryWidget` a `GlobalKey<FormRegistryWidgetState>`, or calling `FormRegistryWidgetState.of` static method.
+First, wrap the widget that contains all your form fields with the `FormRegistryWidget`. This widget is is responsible for tracking all registered fields within its child tree.
 
-These parameters `defaultAlignment`, `defaultDuration`, `defaultCurve`, `defaultAlignmentPolicy` let you setup the default behavior when scrolling to the error fields.
+You can access the registry and its features by providing a `GlobalKey` or by using the `FormRegistryWidget.of` static method.
 
-2. There are two cases regarding your form field widgets that you need to know before continuing:
+**Example:**
 
-    1. You have customized a widget that extends FormField.
-    2. You are using widgets from the framework or customizing widgets from a package.
+```dart
+  final GlobalKey<FormRegistryWidgetState> _registerdKey = GlobalKey();
 
-With the first one, you should:
+  @override
+  Widget build(BuildContext context) {
+    return FormRegistryWidget(
+      key: _registerdKey,
+      autoScrollToFirstInvalid: true,
+      child: Form(
+        child: Column(
+          children: [
+            // ...
+          ],
+        ),
+      ),
+    );
+  }
+```
 
-* Use the mixin `FormFieldRegistrantMixin` in the class that extends `FormField`.
-* Override `registryId`, `registryType` and `lookupPriority`.
+The `FormRegistryWidget` also allows you to set default behaviors for all fields when you need to scroll to an error field. These behaviors are configured using parameters: `defaultAlignment`, `defaultDuration`, and `defaultCurve` and `defaultAlignmentPolicy`.
+
+### 2. Registering Your Form Fields
+
+There are two methods for registering your form fields with the registry, depending on how your fields are implemented.
+
+#### Method A: For Custom `FormField` Widgets
+
+If you've created your own widget that extends `FormField`, use the provided mixins to enable registry tracking.
+
+##### How to Implement
+
+1. Add the `FormFieldRegistrantMixin` to your custom `FormField` class.
+
+2. Add the `FormFieldStateRegistrantMixin` to your corresponding `FormFieldState` class.
+
+3. Override `registryId`, `registryType` and `lookupPriority` properties to control how your field is identified and prioritized.
+
+**Example:**
 
 ```dart
 class CustomTextFormField extends FormField<String>
@@ -102,18 +137,14 @@ class CustomTextFormField extends FormField<String>
   @override
   final int? lookupPriority;
 }
-```
 
-* Use the `FormFieldStateRegistrantMixin` for the class that extends `FormFieldState`.
-
-```dart
 class _CustomTextFormFieldState extends FormFieldState<String>
     with FormFieldStateRegistrantMixin {
   // some code ...
 }
 ```
 
-You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to your customized widget.
+In the `FormFieldState`, you can override the default scrolling behavior here.
 
 ```dart
 class _TextFormFieldState extends FormFieldState<String>
@@ -134,36 +165,19 @@ class _TextFormFieldState extends FormFieldState<String>
 }
 ```
 
-* The `registryId` is used to identify between other `FormField`s. It is nullable, and should only be assigned a value when you need to validate the specific field.
+#### Method B: For Existing Widgets (from Framework or Packages)
 
-```dart
-final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
-final RegisteredField registeredField = formRegistryWidgetState.getFieldBy('your field registry id');
-final result = registeredField.validate();
-```
+If you're using a widget from the Flutter framework (e.g., `TextFormField`) or a third-party package, you must wrap it with the `FormFieldRegistrant` widget.
 
-* The `registrarType` can be used to filter form fields.
+##### How to Implement
 
-```dart
-final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
-final UnmodifiableListView<RegisteredField> registeredFields = formRegistryWidgetState.registeredFields;
-for (final field in registeredFields) {
-  if (field.type == 'date') {
-    // do something...
-  }
-}
-```
+1. Wrap the form field with the `FormFieldRegistrant` widget.
 
-* When the visibility of a `FormField` changes (e.g. from being invisible to visible using the `Visibility` widget), or when it is reinserted into the widget tree (activate) after having been removed (deactivate), it will be registered as the last one in the set. Consequently, when looking for the first invalid field, this `FormField` will not be retrieved, but another one will be. If you consider this as an issue, all you need to do is to set the `lookupPriority` to arrange this `FormField`.
+2. Provide the mandatory parameters: `validator`, and a `builder` function.
 
+3. **Crucially**, pass the key and validator arguments provided by the builder function directly to the widget that represents the form field.
 
-With the second one, you need to:
-
-* Wrap the widget that contains the form field by `FormFieldRegistrant`.
-* There are some mandatory parameters: `registryId`, `validator`, and `builder`.
-* The `builder` function should accept `GlobalKey<FormFieldState<T>>` and `FormFieldValidator<T>` as arguments, and these parameters need to be passed to the widget that represents the form field.
-
-An example with package [`date_field`](https://pub.dev/packages/date_field).
+An example with [`date_field`](https://pub.dev/packages/date_field) package.
 
 ```dart
 FormFieldRegistrant(
@@ -199,18 +213,45 @@ FormFieldRegistrant(
 ),
 ```
 
-If your form field has `restorationId`, you should be passing it to the `FormFieldRegistrant` as well.
+**Note:** If you need to manage a specific `FormFieldState` with your own `Key`, you should give that key to the `FormFieldRegistrant` as well.
 
-<hr>
+### 3. Accessing Registered Fields
 
-* You can also override the default behavior that has been set up in `FormRegistryWidget` when scrolling to this widget.
+Once your fields are registered, you can access them from the `FormRegistryWidgetState` to perform actions like validation, getting `FormFieldState`s, or scrolling to a specific field.
 
-* `FormFieldRegistrant` has a parameter named `formFieldKey`, give it your own key if you need to access the form field state.
+#### To Get a Specific Field
 
-* To get the current value of form field without creating a `GlobalKey<FormFieldState<T>>`, `TextEditingController`, ...
+Use the `FormRegistryWidgetState.getFieldBy` method with the field's `registryId` to access its corresponding `RegisteredField` instance. This allows you to validate or get the value of a single, specific form field without iterating through all of them.
 
 ```dart
 final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
-final RegisteredField registeredField = formRegistryWidgetState.getFieldBy('your field registry id');
-final currentValue = registeredField.getValue();
+final RegisteredField registeredField = formRegistryWidgetState.getFieldBy('your field registry id')!;
+
+// Validate a specific field
+final bool result = registeredField.validate();
+
+// Get the FormFieldState and its value
+final FormFieldState formFieldState = registeredField.formFieldState;
+
+// Get the current value of the field
+final currentValue = formFieldState.value;
+
+// Get the validity of the FormFieldState without running the validator
+final bool isValid = formFieldState.isValid;
 ```
+
+#### To Filter Fields by Type
+
+Use the `FormRegistryWidgetState.registeredFields` property to get an immutable list of all registered fields. You can then use the `registryType` to filter this list and perform actions on a specific group of fields.
+
+```dart
+final FormRegistryWidgetState formRegistryWidgetState = FormRegistryWidget.of(context);
+final UnmodifiableListView<RegisteredField> registeredFields = formRegistryWidgetState.registeredFields;
+for (final field in registeredFields) {
+  if (field.type == 'date') {
+    // do something...
+  }
+}
+```
+
+**Note on** `lookupPriority`: When a `FormField`'s visibility changes (e.g., it goes from being hidden to visible via a `Visibility` widget), it is re-registered at the end of the list. This means it will no longer be considered the "first invalid field". If you want all your form fields to maintain their position in the validation order, use the `lookupPriority` property. A lower number indicates a higher priority.
