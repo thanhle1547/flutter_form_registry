@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final firstInvalidField = _registerdKey.currentState?.firstInvalid;
+          final firstInvalidField = _registerdKey.currentState?.firstErrorField;
 
           print(firstInvalidField?.formFieldState.errorText);
 

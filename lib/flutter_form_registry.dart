@@ -330,7 +330,23 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   UnmodifiableListView<RegisteredField> get registeredFields =>
       UnmodifiableListView(_registeredFields);
 
-  RegisteredField? get firstInvalid {
+  /// Returns an unmodifiable list of all registered [FormFieldState] instances.
+  UnmodifiableListView<FormFieldState> get formFieldStates =>
+      UnmodifiableListView(_registeredFields.map((e) => e.formFieldState));
+
+  /// Returns the first [RegisteredField]
+  /// for which [FormFieldState.isValid] is false.
+  RegisteredField? get firstInvalidField {
+    for (final RegisteredField field in _registeredFields) {
+      if (!field.formFieldState.isValid) return field;
+    }
+
+    return null;
+  }
+
+  /// Returns the first [RegisteredField]
+  /// for which [FormFieldState.hasError] is true.
+  RegisteredField? get firstErrorField {
     for (final RegisteredField field in _registeredFields) {
       if (field.formFieldState.hasError) return field;
     }
@@ -338,12 +354,27 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
     return null;
   }
 
+  /// Returns an unmodifiable list of [RegisteredField]s
+  /// whose [FormFieldState.isValid] is false.
   UnmodifiableListView<RegisteredField> get invalidFields => _registeredFields.isEmpty
+      ? UnmodifiableListView(const <RegisteredField>[])
+      : UnmodifiableListView(_registeredFields.where((e) => e.formFieldState.isValid == false));
+
+  /// Returns an unmodifiable list of [RegisteredField]s
+  /// whose [FormFieldState.isValid] is true.
+  UnmodifiableListView<RegisteredField> get errorFields => _registeredFields.isEmpty
       ? UnmodifiableListView(const <RegisteredField>[])
       : UnmodifiableListView(_registeredFields.where((e) => e.formFieldState.hasError));
 
-  RegisteredField? getFieldBy(String registrarId) =>
-      _noPriority[registrarId.hashCode];
+  /// Returns true if every registered [FormFieldState]
+  /// has [FormFieldState.isValid] equal to true.
+  bool get allAreValid {
+    return _registeredFields.every((e) => e.formFieldState.isValid);
+  }
+
+  RegisteredField? getFieldBy(String registrarId) {
+    return _noPriority[registrarId.hashCode];
+  }
 
   void _register(RegisteredField field) {
     if (_registeredFields.contains(field)) return;
@@ -527,7 +558,7 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 
     if (!result &&
         _autoScrollToFirstError &&
-        _registryWidgetState?.firstInvalid == _registeredField) {
+        _registryWidgetState?.firstErrorField == _registeredField) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         _registeredField?.scrollToIntoView(
           delay: scrollDelay,
@@ -768,7 +799,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
 
     if (result != null &&
         _autoScrollToFirstError &&
-        _registryWidgetState?.firstInvalid == _registeredField) {
+        _registryWidgetState?.firstErrorField == _registeredField) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _registeredField?.scrollToIntoView(
           delay: scrollDelay,
