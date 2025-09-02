@@ -579,10 +579,10 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 class FormFieldRegistrant<T> extends StatefulWidget {
   /// Creates a [FormFieldRegistrant] widget.
   ///
-  /// The [registrarId], [validator] and [builder] parameters must not be null.
+  /// The [validator] and [builder] parameters must not be null.
   const FormFieldRegistrant({
     Key? key,
-    required this.registrarId,
+    this.registrarId,
     this.registrarType,
     this.lookupPriority,
     this.formFieldKey,
@@ -596,7 +596,7 @@ class FormFieldRegistrant<T> extends StatefulWidget {
   }) : super(key: key);
 
   /// The identifier between other [FormField]s.
-  final String registrarId;
+  final String? registrarId;
 
   /// Can be used to filter the form fields in
   /// [FormRegistryWidgetState.registeredFields].
