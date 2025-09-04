@@ -744,6 +744,8 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     _registryWidgetState = FormRegistryWidget.maybeOf(context);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       final registryWidgetState = _registryWidgetState;
 
       if (registryWidgetState != null && _registeredField == null) {
