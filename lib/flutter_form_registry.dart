@@ -751,16 +751,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
       if (registryWidgetState != null && _registeredField == null) {
         final formFieldState = _key.currentState!;
 
-        final newRegisteredField = RegisteredField<T>._(
-          key: _key,
-          id: widget.registrarId,
-          type: widget.registrarType,
-          priority: widget.lookupPriority,
-          scrollConfiguration: this,
-          formFieldState: formFieldState,
-          validate: formFieldState.validate,
-        );
-
+        final newRegisteredField = _createRegisteredField(formFieldState);
         _registeredField = newRegisteredField;
 
         registryWidgetState._register(newRegisteredField);
@@ -802,7 +793,31 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
         'Once the [FormFieldRegistrant.formFieldKey] has a non-null '
         'value, it cannot be changed to null again',
       );
+
+      final formFieldState = formFieldKey?.currentState;
+      if (formFieldKey != null && formFieldState != null && _registeredField?.formFieldState != formFieldState) {
+        _registryWidgetState?._unregister(_registeredField);
+
+        _key = formFieldKey;
+
+        final newRegisteredField = _createRegisteredField(formFieldState);
+        _registeredField = newRegisteredField;
+
+        _registryWidgetState?._register(newRegisteredField);
+      }
     }
+  }
+
+  RegisteredField<T> _createRegisteredField(FormFieldState<T> formFieldState) {
+    return RegisteredField<T>._(
+      key: _key,
+      id: widget.registrarId,
+      type: widget.registrarType,
+      priority: widget.lookupPriority,
+      scrollConfiguration: this,
+      formFieldState: formFieldState,
+      validate: formFieldState.validate,
+    );
   }
 
   @override
