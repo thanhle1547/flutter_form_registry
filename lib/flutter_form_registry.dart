@@ -210,7 +210,7 @@ class RegisteredField<T> {
 /// This is **not** the alternative to the [Form] widget.
 class FormRegistryWidget extends StatefulWidget {
   const FormRegistryWidget({
-    Key? key,
+    super.key,
     required this.autoScrollToFirstInvalid,
     this.defaultScrollDelay = _kScrollDelay,
     this.defaultAlignment = _kAlignment,
@@ -218,7 +218,7 @@ class FormRegistryWidget extends StatefulWidget {
     this.defaultCurve = _kCurve,
     this.defaultAlignmentPolicy = _kAlignmentPolicy,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Automatically scroll to the first invalid form field.
   final bool autoScrollToFirstInvalid;
@@ -594,7 +594,7 @@ class FormFieldRegistrant<T> extends StatefulWidget {
   ///
   /// The [validator] and [builder] parameters must not be null.
   const FormFieldRegistrant({
-    Key? key,
+    super.key,
     this.registrarId,
     this.registrarType,
     this.lookupPriority,
@@ -606,7 +606,7 @@ class FormFieldRegistrant<T> extends StatefulWidget {
     this.duration,
     this.curve,
     this.alignmentPolicy,
-  }) : super(key: key);
+  });
 
   /// The identifier between other [FormField]s.
   final String? registrarId;
