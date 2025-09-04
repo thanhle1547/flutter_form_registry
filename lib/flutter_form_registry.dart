@@ -513,13 +513,19 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     _registryWidgetState = FormRegistryWidget.maybeOf(context);
+
     if (_registryWidgetState != null && _registeredField == null) {
       assert(widget is FormFieldRegistrantMixin);
 
+      final registryWidgetState = _registryWidgetState;
+
+      if (registryWidgetState == null) return;
+
       final formMixin = widget as FormFieldRegistrantMixin;
 
-      _registeredField = RegisteredField<T>._(
+      final newRegisteredField = RegisteredField<T>._(
         key: widget.key,
         id: formMixin.registrarId,
         type: formMixin.registrarType,
@@ -529,7 +535,9 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
         validate: validate,
       );
 
-      _registryWidgetState!._register(_registeredField!);
+      _registeredField = newRegisteredField;
+
+      registryWidgetState._register(newRegisteredField);
     }
   }
 
@@ -736,18 +744,24 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     _registryWidgetState = FormRegistryWidget.maybeOf(context);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (_registryWidgetState != null && _registeredField == null) {
-        _registeredField = RegisteredField<T>._(
+      final registryWidgetState = _registryWidgetState;
+
+      if (registryWidgetState != null && _registeredField == null) {
+        final formFieldState = _key.currentState!;
+
+        final newRegisteredField = RegisteredField<T>._(
           key: _key,
           id: widget.registrarId,
           type: widget.registrarType,
           priority: widget.lookupPriority,
           scrollConfiguration: this,
-          formFieldState: _key.currentState!,
-          validate: _key.currentState!.validate,
+          formFieldState: formFieldState,
+          validate: formFieldState.validate,
         );
 
-        _registryWidgetState!._register(_registeredField!);
+        _registeredField = newRegisteredField;
+
+        registryWidgetState._register(newRegisteredField);
       }
     });
   }
@@ -770,17 +784,19 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
 
     _registeredField?._priority = widget.lookupPriority ?? _kLookupPriority;
 
-    if (oldWidget.formFieldKey == null) {
-      if (widget.formFieldKey == null) return;
+    final formFieldKey = widget.formFieldKey;
 
-      _key = widget.formFieldKey!;
+    if (oldWidget.formFieldKey == null) {
+      if (formFieldKey == null) return;
+
+      _key = formFieldKey;
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _registeredField?._key = _key;
       });
     } else {
       assert(
-        widget.formFieldKey != null,
+        formFieldKey != null,
         'Once the [FormFieldRegistrant.formFieldKey] has a non-null '
         'value, it cannot be changed to null again',
       );
