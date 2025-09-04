@@ -205,7 +205,11 @@ FormFieldRegistrant(
 ),
 ```
 
-**Note:** If you need to manage a specific `FormFieldState` with your own `Key`, you should give that key to the `FormFieldRegistrant` as well.
+**Note:**
+
+- If you need to manage a specific `FormFieldState` with your own `Key`, you should give that key to the `FormFieldRegistrant` as well.
+
+- `FormFieldRegistrant` will ignore the `FormFieldState` if it already implements `FormFieldStateRegistrantMixin`.
 
 ### 3. Accessing Registered Fields
 

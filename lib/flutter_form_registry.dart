@@ -589,6 +589,9 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 
 /// To track the [FormField] widget whose state will be updated at its
 /// nearest ancestor [FormRegistryWidget].
+///
+/// If the [FormFieldState] already implements [FormFieldStateRegistrantMixin],
+/// it won't be registered again.
 class FormFieldRegistrant<T> extends StatefulWidget {
   /// Creates a [FormFieldRegistrant] widget.
   ///
@@ -732,18 +735,18 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   Widget build(BuildContext context) {
     final result = widget.builder(_key, _validator);
 
-    SchedulerBinding.instance.addPostFrameCallback(_maybeRegister);
+    SchedulerBinding.instance.addPostFrameCallback(_maybeReregister);
 
     return result;
   }
 
-  void _maybeRegister(Duration _) {
+  void _maybeReregister(Duration _) {
     if (_key.currentContext == null) {
       _registryWidgetState?._unregister(_registeredField);
     } else {
       if (!mounted) return;
 
-      _registryWidgetState?._register(_registeredField!);
+      _maybeRegister();
     }
   }
 
@@ -763,6 +766,11 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     if (registryWidgetState != null && _registeredField == null) {
       final formFieldState = _key.currentState!;
 
+      if (formFieldState is FormFieldStateRegistrantMixin) {
+        // ignore the FormFieldState if it already implements FormFieldStateRegistrantMixin
+        return;
+      }
+
       final newRegisteredField = _createRegisteredField(formFieldState);
       _registeredField = newRegisteredField;
 
@@ -773,7 +781,14 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   @override
   void activate() {
     super.activate();
-    _registryWidgetState?._register(_registeredField!);
+    _maybeRegister();
+  }
+
+  void _maybeRegister() {
+    final registeredField = _registeredField;
+    if (registeredField != null) {
+      _registryWidgetState?._register(registeredField);
+    }
   }
 
   @override
