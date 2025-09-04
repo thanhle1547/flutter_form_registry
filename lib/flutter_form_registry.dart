@@ -567,7 +567,10 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
     if (!result &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstErrorField == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback(_maybeScrollToReveal);
+      SchedulerBinding.instance.addPostFrameCallback(
+        _maybeScrollToReveal,
+        debugLabel: 'FormFieldRegistrant.scrollToReveal',
+      );
     }
 
     return result;
@@ -843,7 +846,10 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     if (result != null &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstErrorField == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback(_maybeScrollToReveal);
+      SchedulerBinding.instance.addPostFrameCallback(
+        _maybeScrollToReveal,
+        debugLabel: 'FormFieldRegistrant.scrollToReveal',
+      );
     }
 
     return result;
