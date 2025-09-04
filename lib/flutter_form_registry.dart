@@ -557,6 +557,7 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
   void dispose() {
     _registryWidgetState?._unregister(_registeredField);
     _registeredField = null;
+    _registryWidgetState = null;
     super.dispose();
   }
 
@@ -852,6 +853,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   void dispose() {
     _registryWidgetState?._unregister(_registeredField);
     _registeredField = null;
+    _registryWidgetState = null;
     super.dispose();
   }
 
