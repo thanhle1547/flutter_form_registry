@@ -477,7 +477,7 @@ mixin FormFieldRegistrantMixin<T> on FormField<T> {
 /// [FormRegistryWidget.maybeOf] return [FormRegistryWidgetState].
 mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
     implements _ScrollConfiguration {
-  late FormRegistryWidgetState? _registryWidgetState;
+  FormRegistryWidgetState? _registryWidgetState;
   FormRegistryWidget? get _registryWidget => _registryWidgetState?.widget;
 
   RegisteredField? _registeredField;
@@ -692,7 +692,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   late GlobalKey<FormFieldState<T>> _key =
       widget.formFieldKey ?? GlobalKey<FormFieldState<T>>();
 
-  late FormRegistryWidgetState? _registryWidgetState;
+  FormRegistryWidgetState? _registryWidgetState;
   FormRegistryWidget? get _registryWidget => _registryWidgetState?.widget;
 
   RegisteredField? _registeredField;
