@@ -567,18 +567,20 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
     if (!result &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstErrorField == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        _registeredField?.scrollToIntoView(
-          delay: scrollDelay,
-          alignment: alignment,
-          duration: duration,
-          curve: curve,
-          alignmentPolicy: alignmentPolicy,
-        );
-      });
+      SchedulerBinding.instance.addPostFrameCallback(_maybeScrollToReveal);
     }
 
     return result;
+  }
+
+  void _maybeScrollToReveal(Duration _) {
+    _registeredField?.scrollToIntoView(
+      delay: scrollDelay,
+      alignment: alignment,
+      duration: duration,
+      curve: curve,
+      alignmentPolicy: alignmentPolicy,
+    );
   }
 }
 
@@ -727,15 +729,17 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
   Widget build(BuildContext context) {
     final result = widget.builder(_key, _validator);
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (_key.currentContext == null) {
-        _registryWidgetState?._unregister(_registeredField);
-      } else {
-        _registryWidgetState?._register(_registeredField!);
-      }
-    });
+    SchedulerBinding.instance.addPostFrameCallback(_maybeRegister);
 
     return result;
+  }
+
+  void _maybeRegister(Duration _) {
+    if (_key.currentContext == null) {
+      _registryWidgetState?._unregister(_registeredField);
+    } else {
+      _registryWidgetState?._register(_registeredField!);
+    }
   }
 
   @override
@@ -743,20 +747,22 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     super.didChangeDependencies();
     _registryWidgetState = FormRegistryWidget.maybeOf(context);
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+    SchedulerBinding.instance.addPostFrameCallback(_maybeInit);
+  }
 
-      final registryWidgetState = _registryWidgetState;
+  void _maybeInit(Duration _) {
+    if (!mounted) return;
 
-      if (registryWidgetState != null && _registeredField == null) {
-        final formFieldState = _key.currentState!;
+    final registryWidgetState = _registryWidgetState;
 
-        final newRegisteredField = _createRegisteredField(formFieldState);
-        _registeredField = newRegisteredField;
+    if (registryWidgetState != null && _registeredField == null) {
+      final formFieldState = _key.currentState!;
 
-        registryWidgetState._register(newRegisteredField);
-      }
-    });
+      final newRegisteredField = _createRegisteredField(formFieldState);
+      _registeredField = newRegisteredField;
+
+      registryWidgetState._register(newRegisteredField);
+    }
   }
 
   @override
@@ -784,9 +790,7 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
 
       _key = formFieldKey;
 
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _registeredField?._key = _key;
-      });
+      SchedulerBinding.instance.addPostFrameCallback(_updateRegisteredFieldKey);
     } else {
       assert(
         formFieldKey != null,
@@ -806,6 +810,10 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
         _registryWidgetState?._register(newRegisteredField);
       }
     }
+  }
+
+  void _updateRegisteredFieldKey(Duration _) {
+    _registeredField?._key = _key;
   }
 
   RegisteredField<T> _createRegisteredField(FormFieldState<T> formFieldState) {
@@ -833,17 +841,19 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     if (result != null &&
         _autoScrollToFirstError &&
         _registryWidgetState?.firstErrorField == _registeredField) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _registeredField?.scrollToIntoView(
-          delay: scrollDelay,
-          alignment: alignment,
-          duration: duration,
-          curve: curve,
-          alignmentPolicy: alignmentPolicy,
-        );
-      });
+      SchedulerBinding.instance.addPostFrameCallback(_maybeScrollToReveal);
     }
 
     return result;
+  }
+
+  void _maybeScrollToReveal(Duration _) {
+    _registeredField?.scrollToIntoView(
+      delay: scrollDelay,
+      alignment: alignment,
+      duration: duration,
+      curve: curve,
+      alignmentPolicy: alignmentPolicy,
+    );
   }
 }
