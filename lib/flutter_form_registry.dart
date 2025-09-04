@@ -738,6 +738,8 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     if (_key.currentContext == null) {
       _registryWidgetState?._unregister(_registeredField);
     } else {
+      if (!mounted) return;
+
       _registryWidgetState?._register(_registeredField!);
     }
   }
