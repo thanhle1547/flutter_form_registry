@@ -166,7 +166,7 @@ If you're using a widget from the Flutter framework (e.g., `TextFormField`) or a
 
 2. Provide the mandatory parameters: `validator`, and a `builder` function.
 
-3. **Crucially**, pass the `formFieldKey` and `validator` arguments provided by the `builder` function to the widget that represents the form field. The widget returned by the `builder` can be a FormField directly (e.g. `TextFormField`) or have a `FormField` within its widget tree.
+3. **Crucially**, pass the `formFieldKey` and `validator` arguments provided by the `builder` function to the widget that represents the form field. The widget returned by the `builder` can be a `FormField` directly (e.g. `TextFormField`) or have a `FormField` within its widget tree.
 
 Here's an example using the [`date_field`](https://pub.dev/packages/date_field) package. In this case, the widget returned by the `builder` is wrapped with a `Container`.
 

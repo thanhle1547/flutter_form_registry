@@ -622,7 +622,7 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 /// in a predictable sequence.
 ///
 /// To ensure that fields are validated in a specific order,
-/// regardless of when they are registered, use the `lookupPriority` property.
+/// regardless of when they are registered, use the [lookupPriority] property.
 class FormFieldRegistrant<T> extends StatefulWidget {
   /// Creates a [FormFieldRegistrant] widget.
   ///
