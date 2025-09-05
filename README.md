@@ -1,8 +1,7 @@
 # flutter_form_registry
 
-[![Pub Version](https://img.shields.io/pub/v/flutter_form_registry.svg)](https://pub.dev/packages/flutter_form_registry)
-![Pub Points](https://img.shields.io/pub/points/flutter_form_registry.svg)
-![flutter_form_registry version](https://img.shields.io/badge/flutter_form_registry-v0.7.0-brightgreen.svg)
+[![Version](https://img.shields.io/pub/v/flutter_form_registry?include_prereleases)](https://pub.dartlang.org/packages/flutter_form_registry)
+[![Pub Points](https://img.shields.io/pub/points/flutter_form_registry)](https://pub.dev/packages/flutter_form_registry/score)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A workaround to track some `FormField`s in the tree. Support checking `FormField` is fully visible and scrolling into the view.
