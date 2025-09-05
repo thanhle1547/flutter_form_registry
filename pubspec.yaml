@@ -5,7 +5,7 @@ repository: https://github.com/thanhle1547/flutter_form_registry
 
 environment:
   sdk: '>=2.19.0'
-  flutter: ">=3.0.0"
+  flutter: ">=3.7.0"
 
 dependencies:
   flutter:
