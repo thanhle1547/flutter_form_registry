@@ -51,174 +51,194 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Scroll to invalid field example',
+    final appBarActions = <Widget>[
+      Tooltip(
+        message: 'Validate form',
+        child: InkResponse(
+          onTap: () {
+            _formKey.currentState?.validate();
+
+            final firstInvalidField = _registerdKey.currentState?.firstErrorField;
+
+            print(firstInvalidField?.formFieldState.value);
+            print(firstInvalidField?.formFieldState.errorText);
+          },
+          radius: 24,
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.check,
+            ),
+          ),
         ),
-        actions: [
-          Tooltip(
-            message: 'Validate form',
-            child: InkResponse(
-              onTap: () {
-                _formKey.currentState?.validate();
-
-                final firstInvalidField = _registerdKey.currentState?.firstErrorField;
-
-                print(firstInvalidField?.formFieldState.value);
-                print(firstInvalidField?.formFieldState.errorText);
-              },
-              radius: 24,
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.check,
-                ),
-              ),
-            ),
-          ),
-          Tooltip(
-            message: 'Reset form',
-            child: InkResponse(
-              onTap: () {
-                _formKey.currentState?.reset();
-              },
-              radius: 24,
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.restart_alt,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
-      body: FormRegistryWidget(
-        key: _registerdKey,
-        autoScrollToFirstInvalid: true,
-        child: Center(
+      Tooltip(
+        message: 'Reset form',
+        child: InkResponse(
+          onTap: () {
+            _formKey.currentState?.reset();
+          },
+          radius: 24,
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.restart_alt,
+            ),
+          ),
+        ),
+      ),
+    ];
+
+    final children = <Widget>[
+      // CustomTextFormField is a FormField
+      for (int i = 0; i < 15; i++)
+        CustomTextFormField(
+          registrarId: "No. $i",
+          initialValue: "$i",
+          validator: integerTextFieldValidator,
+        ),
+      CustomTextFormField(
+        registrarId: "No. 15",
+        initialValue: 'fifteen',
+        validator: integerTextFieldValidator,
+      ),
+      //
+      // Example using FormFieldRegistrant
+      //
+      for (int i = 16; i < 20; i++)
+        FormFieldRegistrant(
+          registrarId: "No. $i",
+          validator: integerTextFieldValidator,
+          builder: (
+            GlobalKey<FormFieldState<String>> formFieldKey,
+            String? Function(String?) validator,
+          ) {
+            return MyTextField(
+              initial: "$i",
+              fieldKey: formFieldKey,
+              validator: validator,
+            );
+          },
+        ),
+      FormFieldRegistrant(
+        registrarId: 'No. 20',
+        validator: integerTextFieldValidator,
+        builder: (
+          GlobalKey<FormFieldState<String>> formFieldKey,
+          String? Function(String?) validator,
+        ) {
+          return MyTextField(
+            initial: 'twenty',
+            fieldKey: formFieldKey,
+            validator: validator,
+          );
+        },
+      ),
+      for (int i = 21; i < 25; i++)
+        FormFieldRegistrant(
+          registrarId: 'No. $i',
+          formFieldKey: fieldKeys[i - 21],
+          validator: integerTextFieldValidator,
+          builder: (_, String? Function(String?) validator) {
+            return MyTextField(
+              initial: "$i",
+              fieldKey: fieldKeys[i - 21],
+              validator: validator,
+            );
+          },
+        ),
+      //
+      // Example using FormFieldRegistrant with a list of keys
+      //
+      FormFieldRegistrant(
+        registrarId: 'No. 25',
+        formFieldKey: fieldKeys[25 - 21],
+        validator: integerTextFieldValidator,
+        builder: (_, String? Function(String?) validator) {
+          // The widget returned by builder can have a FormField within its widget tree.
+          return Container(
+            height: 100,
+            color: Colors.grey.shade100,
+            alignment: Alignment.center,
+            child: MyTextField(
+              initial: 'twenty-five',
+              fieldKey: fieldKeys[25 - 21],
+              validator: validator,
+            ),
+          );
+        },
+      ),
+      for (int i = 26; i < 40; i++)
+        FormFieldRegistrant(
+          registrarId: 'No. $i',
+          formFieldKey: fieldKeys[i - 21],
+          validator: integerTextFieldValidator,
+          builder: (_, String? Function(String?) validator) {
+            return MyTextField(
+              initial: "$i",
+              fieldKey: fieldKeys[i - 21],
+              validator: validator,
+            );
+          },
+        ),
+      //
+      // Example using FormFieldRegistrantProxy
+      //
+      FormFieldRegistrantProxy(
+        registrarId: 'No. 40',
+        // The child widget must be a FormField.
+        child: CustomTextFormField(
+          registrarId: "No. 40",
+          initialValue: 'forty',
+          validator: integerTextFieldValidator,
+        ),
+      ),
+      for (int i = 41; i < 46; i++)
+        FormFieldRegistrantProxy(
+          registrarId: "No. $i",
+          child: CustomTextFormField(
+            initialValue: i.toString(),
+            validator: integerTextFieldValidator,
+          ),
+        ),
+    ];
+
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Scroll to invalid field example',
+          ),
+          actions: appBarActions,
+        ),
+        body: FormRegistryWidget(
+          key: _registerdKey,
+          autoScrollToFirstInvalid: true,
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: Column(
-                children: <Widget>[
-                  for (int i = 0; i < 15; i++)
-                    CustomTextFormField(
-                      registrarId: "No. $i",
-                      initialValue: "$i",
-                      validator: integerTextFieldValidator,
-                    ),
-                  CustomTextFormField(
-                    registrarId: "No. 15",
-                    initialValue: 'fifteen',
-                    validator: integerTextFieldValidator,
-                  ),
-                  //
-                  for (int i = 16; i < 20; i++)
-                    FormFieldRegistrant(
-                      registrarId: "No. $i",
-                      validator: integerTextFieldValidator,
-                      builder: (
-                        GlobalKey<FormFieldState<String>> formFieldKey,
-                        String? Function(String?) validator,
-                      ) {
-                        return MyTextField(
-                          initial: "$i",
-                          fieldKey: formFieldKey,
-                          validator: validator,
-                        );
-                      },
-                    ),
-                  FormFieldRegistrant(
-                    registrarId: 'No. 20',
-                    validator: integerTextFieldValidator,
-                    builder: (
-                      GlobalKey<FormFieldState<String>> formFieldKey,
-                      String? Function(String?) validator,
-                    ) {
-                      return MyTextField(
-                        initial: 'twenty',
-                        fieldKey: formFieldKey,
-                        validator: validator,
-                      );
-                    },
-                  ),
-                  //
-                  for (int i = 21; i < 25; i++)
-                    FormFieldRegistrant(
-                      registrarId: 'No. $i',
-                      formFieldKey: fieldKeys[i - 21],
-                      validator: integerTextFieldValidator,
-                      builder: (_, String? Function(String?) validator) {
-                        return MyTextField(
-                          initial: "$i",
-                          fieldKey: fieldKeys[i - 21],
-                          validator: validator,
-                        );
-                      },
-                    ),
-                  FormFieldRegistrant(
-                    registrarId: 'No. 25',
-                    formFieldKey: fieldKeys[25 - 21],
-                    validator: integerTextFieldValidator,
-                    builder: (_, String? Function(String?) validator) {
-                      return MyTextField(
-                        initial: 'twenty-five',
-                        fieldKey: fieldKeys[25 - 21],
-                        validator: validator,
-                      );
-                    },
-                  ),
-                  //
-                  for (int i = 26; i < 40; i++)
-                    FormFieldRegistrant(
-                      registrarId: 'No. $i',
-                      formFieldKey: fieldKeys[i - 21],
-                      validator: integerTextFieldValidator,
-                      builder: (_, String? Function(String?) validator) {
-                        return MyTextField(
-                          initial: "$i",
-                          fieldKey: fieldKeys[i - 21],
-                          validator: validator,
-                        );
-                      },
-                    ),
-                  FormFieldRegistrantProxy(
-                    registrarId: 'No. 40',
-                    child: CustomTextFormField(
-                      registrarId: "No. 40",
-                      initialValue: 'forty',
-                      validator: integerTextFieldValidator,
-                    ),
-                  ),
-                  //
-                  for (int i = 41; i < 46; i++)
-                    FormFieldRegistrantProxy(
-                      registrarId: "No. $i",
-                      child: CustomTextFormField(
-                        initialValue: i.toString(),
-                        validator: integerTextFieldValidator,
-                      ),
-                    ),
-                ],
+                children: children,
               ),
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final firstInvalidField = _registerdKey.currentState?.firstErrorField;
-
-          print(firstInvalidField?.formFieldState.value);
-          print(firstInvalidField?.formFieldState.errorText);
-
-          firstInvalidField?.scrollToIntoView();
-        },
-        tooltip: 'Scroll to invalid',
-        child: const Icon(Icons.search),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final firstInvalidField = _registerdKey.currentState?.firstErrorField;
+      
+            print(firstInvalidField?.formFieldState.value);
+            print(firstInvalidField?.formFieldState.errorText);
+      
+            firstInvalidField?.scrollToIntoView();
+          },
+          tooltip: 'Scroll to invalid',
+          child: const Icon(Icons.search),
+        ),
       ),
     );
   }
