@@ -849,16 +849,18 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
         'value, it cannot be changed to null again',
       );
 
+      final registryWidgetState = _registryWidgetState;
       final formFieldState = formFieldKey?.currentState;
-      if (formFieldKey != null && formFieldState != null && _registeredField?.formFieldState != formFieldState) {
-        _registryWidgetState?._unregister(_registeredField);
+      if (registryWidgetState != null && formFieldKey != null &&
+          formFieldState != null && _registeredField?.formFieldState != formFieldState) {
+        registryWidgetState._unregister(_registeredField);
 
         _key = formFieldKey;
 
         final newRegisteredField = _createRegisteredField(formFieldState);
         _registeredField = newRegisteredField;
 
-        _registryWidgetState?._register(newRegisteredField);
+        registryWidgetState._register(newRegisteredField);
       }
     }
   }
