@@ -1,8 +1,11 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+
+const String _flutterFormRegistryLibrary = 'package:flutter_form_registry/flutter_form_registry.dart';
 
 /// The default value of [FormRegistryWidget.defaultScrollDelay],
 /// [FormFieldStateRegistrantMixin.scrollDelay],
@@ -379,6 +382,17 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   void _register(RegisteredField field) {
     if (_registeredFields.contains(field)) return;
 
+    assert(() {
+      if (kFlutterMemoryAllocationsEnabled) {
+        MemoryAllocations.instance.dispatchObjectCreated(
+          library: _flutterFormRegistryLibrary,
+          className: '$FormRegistryWidgetState',
+          object: field,
+        );
+      }
+      return true;
+    }());
+
     if (field._priority == -1 || _registeredFields.isEmpty) {
       _registeredFields.add(field);
       _tryAddEntry(field.id, field);
@@ -418,6 +432,13 @@ class FormRegistryWidgetState extends State<FormRegistryWidget> {
   }
 
   void _unregister(RegisteredField? field) {
+    assert(() {
+      if (kFlutterMemoryAllocationsEnabled && field != null) {
+        MemoryAllocations.instance.dispatchObjectDisposed(object: field);
+      }
+      return true;
+    }());
+
     _registeredFields.remove(field);
     _noPriority.remove(field?.id.hashCode);
   }
