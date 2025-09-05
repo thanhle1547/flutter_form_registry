@@ -882,3 +882,143 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>>
     );
   }
 }
+
+class FormFieldRegistrantProxy<T> extends ProxyWidget {
+  const FormFieldRegistrantProxy({
+    super.key, 
+    this.registrarId,
+    this.registrarType,
+    this.lookupPriority,
+    required FormField<T> super.child,
+  });
+
+  /// The identifier between other [FormField]s.
+  final String? registrarId;
+
+  /// Can be used to filter the form fields in
+  /// [FormRegistryWidgetState.registeredFields].
+  final Object? registrarType;
+
+  /// When the visibility of a `FormField` changes (e.g. from being invisible
+  /// to visible using the [Visibility] widget), or when it is reinserted into
+  /// the widget tree (activate) after having been removed (deactivate),
+  /// it will be registered as the last one in the set. Consequently,
+  /// when looking for the first invalid field, this `FormField`
+  /// will not be retrieved, but another one will be.
+  /// If you consider this as an issue, all you need to do is to set
+  /// the priority to arrange this [FormField].
+  ///
+  /// Default to `-1` if `null`.
+  ///
+  /// Helping determines the placement of this widget in a sequence of widgets
+  /// by assigning a numerical value.
+  ///
+  /// Lower values will be lookup first.
+  final int? lookupPriority;
+
+  @override
+  Element createElement() => _FormFieldRegistrantProxyElement<T>(this);
+}
+
+class _FormFieldRegistrantProxyElement<T> extends ProxyElement
+    with _ScrollConfiguration {
+  _FormFieldRegistrantProxyElement(super.widget);
+
+  FormRegistryWidgetState? _registryWidgetState;
+  FormRegistryWidget? get _registryWidget => _registryWidgetState?.widget;
+
+  RegisteredField? _registeredField;
+
+  @override
+  Duration get scrollDelay =>
+      _registryWidget?.defaultScrollDelay ??
+      _kScrollDelay;
+
+  /// To decide where to align the visible object
+  /// when applying [ScrollPositionAlignmentPolicy.explicit].
+  @override
+  double get alignment => _registryWidget?.defaultAlignment ?? _kAlignment;
+
+  /// The duration to use when applying the `duration` parameter of
+  /// [ScrollPosition.ensureVisible].
+  @override
+  Duration get duration => _registryWidget?.defaultDuration ?? _kDuration;
+
+  /// The curve to use when applying the `curve` parameter of
+  /// [ScrollPosition.ensureVisible].
+  @override
+  Curve get curve => _registryWidget?.defaultCurve ?? _kCurve;
+
+  /// The policy to use when applying the `alignment` parameter of
+  /// [ScrollPosition.ensureVisible].
+  @override
+  ScrollPositionAlignmentPolicy get alignmentPolicy =>
+      _registryWidget?.defaultAlignmentPolicy ??
+      _kAlignmentPolicy;
+
+  @override
+  Element? updateChild(Element? child, Widget? newWidget, Object? newSlot) {
+    final newChild = super.updateChild(child, newWidget, newSlot);
+
+    bool isRegistered = false;
+
+    if (newChild is StatefulElement) {
+      final state = newChild.state;
+
+      if (state is FormFieldState<T>) {
+        isRegistered = true;
+
+        // ignore the FormFieldState if it already implements FormFieldStateRegistrantMixin
+        if (state is! FormFieldStateRegistrantMixin) {
+          final registryWidgetState = _registryWidgetState;
+
+          final proxyWidget = widget as FormFieldRegistrantProxy;
+
+          if (registryWidgetState != null && _registeredField == null) {
+            final newRegisteredField = RegisteredField<T>._(
+              key: state.widget.key,
+              id: proxyWidget.registrarId,
+              type: proxyWidget.registrarType,
+              priority: proxyWidget.lookupPriority,
+              scrollConfiguration: this,
+              formFieldState: state,
+              validate: state.validate,
+            );
+            _registeredField = newRegisteredField;
+
+            registryWidgetState._register(newRegisteredField);
+          }
+        }
+      }
+    }
+
+    if (!isRegistered) {
+      _registryWidgetState?._unregister(_registeredField);
+    }
+
+    return newChild;
+  }
+
+  @override
+  void mount(Element? parent, Object? newSlot) {
+    super.mount(parent, newSlot);
+    _registryWidgetState = FormRegistryWidget.maybeOf(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _registryWidgetState = FormRegistryWidget.maybeOf(this);
+  }
+
+  @override
+  void unmount() {
+    _registryWidgetState?._unregister(_registeredField);
+    _registeredField = null;
+    _registryWidgetState = null;
+    super.unmount();
+  }
+
+  @override
+  void notifyClients(covariant ProxyWidget oldWidget) {}
+}

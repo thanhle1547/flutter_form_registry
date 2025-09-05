@@ -62,6 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
             child: InkResponse(
               onTap: () {
                 _formKey.currentState?.validate();
+
+                final firstInvalidField = _registerdKey.currentState?.firstErrorField;
+
+                print(firstInvalidField?.formFieldState.value);
+                print(firstInvalidField?.formFieldState.errorText);
               },
               radius: 24,
               child: const Padding(
@@ -180,6 +185,23 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       },
                     ),
+                  FormFieldRegistrantProxy(
+                    registrarId: 'No. 40',
+                    child: CustomTextFormField(
+                      registrarId: "No. 40",
+                      initialValue: 'forty',
+                      validator: integerTextFieldValidator,
+                    ),
+                  ),
+                  //
+                  for (int i = 41; i < 46; i++)
+                    FormFieldRegistrantProxy(
+                      registrarId: "No. $i",
+                      child: CustomTextFormField(
+                        initialValue: i.toString(),
+                        validator: integerTextFieldValidator,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -190,6 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           final firstInvalidField = _registerdKey.currentState?.firstErrorField;
 
+          print(firstInvalidField?.formFieldState.value);
           print(firstInvalidField?.formFieldState.errorText);
 
           firstInvalidField?.scrollToIntoView();
