@@ -138,27 +138,6 @@ class _CustomTextFormFieldState extends FormFieldState<String>
 }
 ```
 
-In the `FormFieldState`, you can override the default scrolling behavior here.
-
-```dart
-class _TextFormFieldState extends FormFieldState<String>
-    with FormFieldStateRegistrantMixin {
-  @override
-  double get alignment => yourAlignment;
-
-  @override
-  Duration get duration => yourDuration;
-
-  @override
-  Curve get curve => yourCurve;
-
-  @override
-  ScrollPositionAlignmentPolicy get alignmentPolicy => yourAlignmentPolicy;
-
-  // some code ...
-}
-```
-
 #### Method B: For Existing Widgets (With Scroll-to-Invalid-Field)
 
 If you're using a widget from the Flutter framework (e.g., `TextFormField`) or a third-party package and want to enable the auto-scroll-to-invalid-field feature, you can wrap it with the `FormFieldRegistrant` widget.
