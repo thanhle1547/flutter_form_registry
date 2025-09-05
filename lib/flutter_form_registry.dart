@@ -593,6 +593,15 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T>
 ///
 /// If the [FormFieldState] already implements [FormFieldStateRegistrantMixin],
 /// it won't be registered again.
+///
+/// It's not guaranteed that the field will be registered in the same order
+/// as they appear in the widget tree. This is because a [FormFieldRegistrant]
+/// can only register a field after the [FormField] has been built and
+/// attached to the widget tree, which might not happen
+/// in a predictable sequence.
+///
+/// To ensure that fields are validated in a specific order,
+/// regardless of when they are registered, use the `lookupPriority` property.
 class FormFieldRegistrant<T> extends StatefulWidget {
   /// Creates a [FormFieldRegistrant] widget.
   ///
