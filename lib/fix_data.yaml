@@ -1,0 +1,66 @@
+# Docs on data driven fixes:
+# https://github.com/flutter/flutter/blob/master/docs/contributing/Data-driven-Fixes.md
+
+version: 1
+transforms:
+  # FormRegistryWidgetState.firstInvalid => FormRegistryWidgetState.firstErrorField
+  - title: "Rename to 'firstErrorField'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      getter: firstInvalid
+      inClass: FormRegistryWidgetState
+    changes:
+      - kind: 'rename'
+        newName: firstErrorField
+
+  - title: "Remove 'restorationId' from 'FormFieldRegistrant'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      constructor: ''
+      inClass: FormFieldRegistrant
+    changes:
+      - kind: 'removeParameter'
+        name: 'restorationId'
+
+  - title: "Use 'formFieldState' to get 'errorText'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      getter: 'errorText'
+      inClass: RegisteredField
+    changes:
+      - kind: 'rename'
+        newName: 'formFieldState.errorText'
+
+  - title: "Use 'formFieldState' to get 'hasError'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      getter: 'hasError'
+      inClass: RegisteredField
+    changes:
+      - kind: 'rename'
+        newName: 'formFieldState.hasError'
+
+  # Moving RegisteredField.getValue() to RegisteredField.formFieldState.value
+  # is actually impossible to implement in fix_data.yaml
+  # because of the limitations of `replacedBy`:
+  # https://github.com/flutter/flutter/blob/master/docs/contributing/Data-driven-Fixes.md#test-folder
+  # - title: "Use 'formFieldState' to get 'value'"
+  #   date: 2025-09-05
+  #   bulkApply: true
+  #   element:
+  #     uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+  #     method: 'getValue'
+  #     inClass: RegisteredField
+  #   changes:
+  #     - kind: 'replacedBy'
+  #       newElement:
+  #         uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+  #         getter: 'formFieldState.value'

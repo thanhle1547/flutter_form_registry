@@ -54,6 +54,9 @@ dependencies:
 
   flutter_form_registry: ^0.7.0
 ```
+## 🚀 Migration to 0.8.0
+
+Version 0.8.0 contains breaking changes. Use `dart fix` to migrate to the latest version.
 
 ## 📺 Usage
 
