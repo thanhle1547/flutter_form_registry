@@ -1,3 +1,71 @@
+## 0.8.0
+
+* README API correction.
+
+* Fix Dart SDK do not constraint to `2.19.0` at minimum in README.
+
+* Fix Flutter SDK do not constraint to `3.7.0` at minimum in README.
+
+* Update the upper bound of the SDK constraint to `<4.0.0`.
+
+* New example project using Flutter version 3.19.6
+
+* Make `FormFieldRegistrant.registrarId` nullable.
+
+* Handle `FormFieldRegistrant.formFieldKey` changed or associated `FormField` changed.
+
+* Add timeline events for post frame callbacks.
+
+* `FormFieldRegistrant` will ignore the `FormFieldState` if it already implement `FormFieldStateRegistrantMixin`.
+
+* Uses `MemoryAllocations` to track instances of `RegisteredField`.
+
+* Remove reference to old version in README.
+
+* Update widget documents.
+
+* **Add** `FormRegistryWidgetState.formFieldStates`.
+* **Add** `FormRegistryWidgetState.firstInvalidField`.
+* **Add** `FormRegistryWidgetState.firstErrorField`.
+* **Add** `FormRegistryWidgetState.errorFields`.
+* **Add** `FormRegistryWidgetState.allAreValid`.
+
+* **Add** `FormFieldRegistrantProxy`.
+
+* **Add** `RegisteredField.formFieldState`.
+
+* **Breaking:**
+
+  * **Remove** `FormFieldRegistrant.restorationId`.
+
+  * **Remove** `FormRegistryWidgetState.firstInvalid`, use `FormRegistryWidgetState.firstErrorField` instead.
+
+  * **Replace** `RegisteredField.isValid()`, `RegisteredField.errorText`, `RegisteredField.hasError` and `RegisteredField.getValue()` with `RegisteredField.formFieldState`. It's also fix the issue that `RegisteredField.hasError` return true and `RegisteredField.errorText` return old error message after `FormFieldState.reset()` or `FormState.reset()` are called.
+
+    - `RegisteredField.isValid()` ⇒ `RegisteredField.formFieldState.isValid`
+    - `RegisteredField.errorText` ⇒ `RegisteredField.formFieldState.errorText`
+    - `RegisteredField.hasError` ⇒ `RegisteredField.formFieldState.hasError`
+    - `RegisteredField.getValue()` ⇒ `RegisteredField.formFieldState.getValue`
+
+  * `FormRegistryWidgetState.invalidFields` now returns all the `RegisteredField` that the `FormFieldState.isValid` equal to false. Previously, it returns all the `RegisteredField` that the `FormFieldState.hasError` equal to true.
+
+  * **Remove** ability to override the default scrolling behavior
+
+    - ~~FormFieldStateRegistrantMixin.scrollDelay~~
+    - ~~FormFieldStateRegistrantMixin.alignment~~
+    - ~~FormFieldStateRegistrantMixin.duration~~
+    - ~~FormFieldStateRegistrantMixin.curve~~
+    - ~~FormFieldStateRegistrantMixin.alignmentPolicy~~
+
+    - ~~FormFieldRegistrant.scrollDelay~~
+    - ~~FormFieldRegistrant.alignment~~
+    - ~~FormFieldRegistrant.duration~~
+    - ~~FormFieldRegistrant.curve~~
+    - ~~FormFieldRegistrant.alignmentPolicy~~
+
+* Provide fix suggestions for `dart fix`.
+
+
 ## 0.7.0
 
 * **Add** `RegisteredField.getValue()` methods.

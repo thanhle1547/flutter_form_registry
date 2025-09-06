@@ -52,7 +52,7 @@ A workaround to track some `FormField`s in the tree. Support checking `FormField
 ```yaml
 dependencies:
 
-  flutter_form_registry: ^0.7.0
+  flutter_form_registry: ^0.8.0
 
 ```
 ## 🚀 Migration to 0.8.0
