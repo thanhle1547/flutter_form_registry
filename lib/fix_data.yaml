@@ -64,3 +64,60 @@ transforms:
   #       newElement:
   #         uris: ['package:flutter_form_registry/flutter_form_registry.dart']
   #         getter: 'formFieldState.value'
+
+  # Remove ability to override the default scrolling behavior in `FormFieldRegistrant`
+
+  - title: "Remove 'scrollDelay' from 'FormFieldRegistrant'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      constructor: ''
+      inClass: FormFieldRegistrant
+    changes:
+      - kind: 'removeParameter'
+        name: 'scrollDelay'
+
+  - title: "Remove 'alignment' from 'FormFieldRegistrant'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      constructor: ''
+      inClass: FormFieldRegistrant
+    changes:
+      - kind: 'removeParameter'
+        name: 'alignment'
+
+  - title: "Remove 'duration' from 'FormFieldRegistrant'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      constructor: ''
+      inClass: FormFieldRegistrant
+    changes:
+      - kind: 'removeParameter'
+        name: 'duration'
+
+  - title: "Remove 'curve' from 'FormFieldRegistrant'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      constructor: ''
+      inClass: FormFieldRegistrant
+    changes:
+      - kind: 'removeParameter'
+        name: 'curve'
+
+  - title: "Remove 'alignmentPolicy' from 'FormFieldRegistrant'"
+    date: 2025-09-05
+    bulkApply: true
+    element:
+      uris: ['package:flutter_form_registry/flutter_form_registry.dart']
+      constructor: ''
+      inClass: FormFieldRegistrant
+    changes:
+      - kind: 'removeParameter'
+        name: 'alignmentPolicy'
