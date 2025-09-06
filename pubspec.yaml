@@ -2,6 +2,9 @@ name: flutter_form_registry
 description: A workaround to track some FormFields in the tree. Support checking `FormField` is fully visible and scrolling into the view.
 version: 0.7.0
 repository: https://github.com/thanhle1547/flutter_form_registry
+topics:
+  - form
+  - form-fields
 
 environment:
   sdk: '>=2.19.0'
