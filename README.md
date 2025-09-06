@@ -45,7 +45,7 @@ A workaround to track some `FormField`s in the tree. Support checking `FormField
 
 * Flutter SDK `>=3.7.0`
 
-* Dart SDK `>=2.19.0`
+* Dart SDK `>=2.19.0 < 4.0.0`
 
 ## 💽 Installation
 
