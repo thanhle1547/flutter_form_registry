@@ -476,6 +476,7 @@ class _FormRegistryWidgetScope extends InheritedWidget {
   }
 }
 
+/// A mixin that helps [FormFieldStateRegistrantMixin] create [RegisteredField].
 mixin FormFieldRegistrantMixin<T> on FormField<T> {
   /// The identifier between other [FormField]s when using [FormRegistryWidget].
   String? get registrarId;
@@ -484,21 +485,16 @@ mixin FormFieldRegistrantMixin<T> on FormField<T> {
   /// [FormRegistryWidgetState.registeredFields].
   Object? get registrarType;
 
-  /// When the visibility of a `FormField` changes (e.g. from being invisible
-  /// to visible using the [Visibility] widget), or when it is reinserted into
-  /// the widget tree (activate) after having been removed (deactivate),
-  /// it will be registered as the last one in the set. Consequently,
-  /// when looking for the first invalid field, this `FormField`
-  /// will not be retrieved, but another one will be.
-  /// If you consider this as an issue, all you need to do is to set
-  /// the priority to arrange this [FormField].
+  /// Used to maintain all the form field positions in the validation order.
+  ///
+  /// A lower number indicates a higher priority.
+  ///
+  /// When the visibility of a `FormField` changes
+  /// (e.g., it goes from being hidden to visible via a `Visibility` widget),
+  /// it is re-registered at the end of the list. This means
+  /// it will no longer be considered the "first invalid field".
   ///
   /// Default to `-1` if `null`.
-  ///
-  /// Helping determines the placement of this widget in a sequence of widgets
-  /// by assigning a numerical value.
-  ///
-  /// Lower values will be lookup first.
   int? get lookupPriority;
 }
 
@@ -587,8 +583,9 @@ mixin FormFieldStateRegistrantMixin<T> on FormFieldState<T> {
   }
 }
 
-/// To track the [FormField] widget whose state will be updated at its
-/// nearest ancestor [FormRegistryWidget].
+/// A registrant to track the [FormFieldState]
+/// that is able to automatically scroll to the first error field when
+/// [FormRegistryWidget.autoScrollToFirstInvalid] is true.
 ///
 /// If the [FormFieldState] already implements [FormFieldStateRegistrantMixin],
 /// it won't be registered again.
@@ -622,47 +619,31 @@ class FormFieldRegistrant<T> extends StatefulWidget {
   /// [FormRegistryWidgetState.registeredFields].
   final Object? registrarType;
 
-  /// When the visibility of a `FormField` changes (e.g. from being invisible
-  /// to visible using the [Visibility] widget), or when it is reinserted into
-  /// the widget tree (activate) after having been removed (deactivate),
-  /// it will be registered as the last one in the set. Consequently,
-  /// when looking for the first invalid field, this `FormField`
-  /// will not be retrieved, but another one will be.
-  /// If you consider this as an issue, all you need to do is to set
-  /// the priority to arrange this [FormField].
+  /// Used to maintain all the form field positions in the validation order.
+  ///
+  /// A lower number indicates a higher priority.
+  ///
+  /// When the visibility of a `FormField` changes
+  /// (e.g., it goes from being hidden to visible via a `Visibility` widget),
+  /// it is re-registered at the end of the list. This means
+  /// it will no longer be considered the "first invalid field".
   ///
   /// Default to `-1` if `null`.
-  ///
-  /// Helping determines the placement of this widget in a sequence of widgets
-  /// by assigning a numerical value.
-  ///
-  /// Lower values will be lookup first.
   final int? lookupPriority;
 
-  /// The existed form field key
+  /// The existed form field key.
   ///
   /// A new `GlobalKey<FormFieldState<T>>`will be created if [formFieldKey]
   /// changed to `null`.
   final GlobalKey<FormFieldState<T>>? formFieldKey;
 
-  /// An optional method that validates an input. Returns an error string to
-  /// display if the input is invalid, or null otherwise.
-  ///
-  /// The returned value is exposed by the [FormFieldState.errorText] property.
-  /// The [TextFormField] uses this to override the [InputDecoration.errorText]
-  /// value.
-  ///
-  /// Alternating between error and normal state can cause the height of the
-  /// [TextFormField] to change if no other subtext decoration is set on the
-  /// field. To create a field whose height is fixed regardless of whether or
-  /// not an error is displayed, either wrap the  [TextFormField] in a fixed
-  /// height parent like [SizedBox], or set the [InputDecoration.helperText]
-  /// parameter to a space.
+  /// The method that will validate the input.
   final FormFieldValidator<T> validator;
 
-  /// The function that returns the widget representing your form field. It is
-  /// passed the form field key as the key must be (in case there is no existing
-  /// form field key, i.e, [formFieldKey] is null).
+  /// The builder provides a [GlobalKey] to retrieve [FormField]'s
+  /// current state and the new validator method. The new validator is able to
+  /// automatically scroll to the first error field when
+  /// [FormRegistryWidget.autoScrollToFirstInvalid] is true.
   final Widget Function(
     GlobalKey<FormFieldState<T>> formFieldKey,
     FormFieldValidator<T> validator,
@@ -835,6 +816,13 @@ class _FormFieldRegistrantState<T> extends State<FormFieldRegistrant<T>> {
   }
 }
 
+/// A lightweight registrant to track the [FormFieldState]
+/// but it is **not able to** automatically scroll
+/// to the first error field.
+///
+/// If the associated [FormFieldState] class
+/// already implements [FormFieldStateRegistrantMixin],
+/// it won't be registered again.
 class FormFieldRegistrantProxy<T> extends ProxyWidget {
   const FormFieldRegistrantProxy({
     super.key, 
@@ -851,21 +839,16 @@ class FormFieldRegistrantProxy<T> extends ProxyWidget {
   /// [FormRegistryWidgetState.registeredFields].
   final Object? registrarType;
 
-  /// When the visibility of a `FormField` changes (e.g. from being invisible
-  /// to visible using the [Visibility] widget), or when it is reinserted into
-  /// the widget tree (activate) after having been removed (deactivate),
-  /// it will be registered as the last one in the set. Consequently,
-  /// when looking for the first invalid field, this `FormField`
-  /// will not be retrieved, but another one will be.
-  /// If you consider this as an issue, all you need to do is to set
-  /// the priority to arrange this [FormField].
+  /// Used to maintain all the form field positions in the validation order.
+  ///
+  /// A lower number indicates a higher priority.
+  ///
+  /// When the visibility of a `FormField` changes
+  /// (e.g., it goes from being hidden to visible via a `Visibility` widget),
+  /// it is re-registered at the end of the list. This means
+  /// it will no longer be considered the "first invalid field".
   ///
   /// Default to `-1` if `null`.
-  ///
-  /// Helping determines the placement of this widget in a sequence of widgets
-  /// by assigning a numerical value.
-  ///
-  /// Lower values will be lookup first.
   final int? lookupPriority;
 
   @override
