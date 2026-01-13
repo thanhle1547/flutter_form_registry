@@ -862,43 +862,24 @@ class _FormFieldRegistrantProxyElement<T> extends ProxyElement {
 
   RegisteredField? _registeredField;
 
+  FormFieldState<T>? _formFieldState;
+
   @override
   Element? updateChild(Element? child, Widget? newWidget, Object? newSlot) {
     final newChild = super.updateChild(child, newWidget, newSlot);
-
-    bool isRegistered = false;
 
     if (newChild is StatefulElement) {
       final state = newChild.state;
 
       if (state is FormFieldState<T>) {
-        isRegistered = true;
-
         // ignore the FormFieldState if it already implements FormFieldStateRegistrantMixin
         if (state is! FormFieldStateRegistrantMixin) {
-          final registryWidgetState = _registryWidgetState;
-
-          final proxyWidget = widget as FormFieldRegistrantProxy;
-
-          if (registryWidgetState != null && _registeredField == null) {
-            final newRegisteredField = RegisteredField<T>._(
-              key: state.widget.key,
-              id: proxyWidget.registrarId,
-              type: proxyWidget.registrarType,
-              priority: proxyWidget.lookupPriority,
-              getScrollConfiguration: registryWidgetState._getScrollConfiguration,
-              formFieldState: state,
-              validate: state.validate,
-            );
-            _registeredField = newRegisteredField;
-
-            registryWidgetState._register(newRegisteredField);
-          }
+          _formFieldState = state;
         }
       }
     }
 
-    if (!isRegistered) {
+    if (_registeredField != null) {
       _registryWidgetState?._unregister(_registeredField);
     }
 
@@ -908,7 +889,27 @@ class _FormFieldRegistrantProxyElement<T> extends ProxyElement {
   @override
   void mount(Element? parent, Object? newSlot) {
     super.mount(parent, newSlot);
-    _registryWidgetState = FormRegistryWidget.maybeOf(this);
+
+    final registryWidgetState = FormRegistryWidget.maybeOf(this);
+    _registryWidgetState = registryWidgetState;
+    final formFieldState = _formFieldState;
+
+    if (formFieldState != null && registryWidgetState != null && _registeredField == null) {
+      final proxyWidget = widget as FormFieldRegistrantProxy;
+
+      final newRegisteredField = RegisteredField<T>._(
+        key: formFieldState.widget.key,
+        id: proxyWidget.registrarId,
+        type: proxyWidget.registrarType,
+        priority: proxyWidget.lookupPriority,
+        getScrollConfiguration: registryWidgetState._getScrollConfiguration,
+        formFieldState: formFieldState,
+        validate: formFieldState.validate,
+      );
+      _registeredField = newRegisteredField;
+
+      registryWidgetState._register(newRegisteredField);
+    }
   }
 
   @override
@@ -922,6 +923,7 @@ class _FormFieldRegistrantProxyElement<T> extends ProxyElement {
     _registryWidgetState?._unregister(_registeredField);
     _registeredField = null;
     _registryWidgetState = null;
+    _formFieldState = null;
     super.unmount();
   }
 

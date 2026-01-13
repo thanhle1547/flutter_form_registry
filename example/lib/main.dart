@@ -193,14 +193,27 @@ class _MyHomePageState extends State<MyHomePage> {
           validator: integerTextFieldValidator,
         ),
       ),
-      for (int i = 41; i < 46; i++)
-        FormFieldRegistrantProxy(
-          registrarId: "No. $i",
-          child: CustomTextFormField(
-            initialValue: i.toString(),
-            validator: integerTextFieldValidator,
-          ),
+      FormFieldRegistrantProxy(
+        registrarId: "No. 41",
+        child: CustomTextFormField(
+          initialValue: '41',
+          validator: integerTextFieldValidator,
         ),
+      ),
+      FormFieldRegistrantProxy(
+        registrarId: "No. 42",
+        child: TextFormField(
+          initialValue: '42',
+          validator: integerTextFieldValidator,
+        ),
+      ),
+      FormFieldRegistrantProxy(
+        registrarId: "No. 43",
+        child: TextFormField(
+          initialValue: '43',
+          validator: integerTextFieldValidator,
+        ),
+      ),
     ];
 
     return GestureDetector(
