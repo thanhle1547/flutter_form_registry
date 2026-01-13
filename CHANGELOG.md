@@ -1,3 +1,7 @@
+## 0.8.1
+
+* Fix `FormFieldRegistrantProxy` failing to register `FormFieldState` with `FormRegistryWidget`
+
 ## 0.8.0
 
 * README API correction.
